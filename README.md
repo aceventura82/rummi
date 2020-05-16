@@ -1,2 +1,2 @@
 # rummi
-Rummi Game Android App
+Rummi Game Server

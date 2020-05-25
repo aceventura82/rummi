@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="{{request.session.lang|default:'es'}}">
+{% load static %}
+{% load i18n %}
+	{% include "admin/head.html" %}
+	<body class="nav-md">
+		<div class="container body">
+			<div class="main_container">
+				{% include "admin/header.html" %}
+				<div class="right_col" role="main">
+					<div class="clearfix"></div>
+					<!-- CONTENT -->
+						<div class="row">
+							<div class="col-md-12 col-sm-12 col-xs-12">
+								 <div class="x_panel">
+									<div class="x_title collapse-link">
+										<h2>{% trans 'Search' %}</h2>
+										<ul class="nav navbar-right panel_toolbox">
+											<li><a ><i class="fa fa-chevron-down"></i></a></li>
+										</ul>
+										<div class="clearfix"></div>
+									</div>
+									<div class="x_content">
+										<br />
+										<form method="post" data-parsley-validate class="form-horizontal form-label-left">
+											{% csrf_token %}
+											<div class="form-group">
+												<label class="control-label col-md-2 col-sm-2 col-xs-6">{% trans 'Search'%}<span class="required">*</span>
+												</label>
+												<div class="col-md-4 col-sm-4 col-xs-6">
+													<input type="text" name="search" class="form-control col-md-7 col-xs-12" value='{{ data.name|default:'' }}'>
+												</div>
+												<div align="col-md-3 col-sm-3 col-xs-6">
+													<button type="submit" value="logo"  name="searchBT" class="btn btn-success">{% trans 'Search' %}</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12 col-sm-12 col-xs-12">
+								 <div class="x_panel">
+									<div class="x_title collapse-link">
+										<h2>{% trans 'Users' %}</h2>
+										<ul class="nav navbar-right panel_toolbox">
+											<li><a ><i class="fa fa-chevron-down"></i></a></li>
+										</ul>
+										<div class="clearfix"></div>
+									</div>
+									<div class="x_content {% if request.POST.searchBT is None %}collapse{% endif %}">
+										<br />
+										<table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+											<thead>
+												<tr>
+													<th>Id</th>
+													<th>{% trans 'Name' %}</th>
+													<th>{% trans 'Lastname' %}</th>
+													<th>{% trans 'Country' %}</th>
+													<th>{% trans 'Status' %}</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for player in players %}
+												<tr onclick="window.location.href='{% url 'adminIndex' %}player/{{player.userId.id}}'">
+													<td>
+														{{ player.userId.id}}
+													</td>
+													<td>
+														{{ player.name}}
+													</td>
+													<td>
+														{{ player.lastname}}
+													</td>
+													<td>
+														{{ player.country}}
+													</td>
+													<td align="center">
+														{% if  player.status is None %}<div class="alert-warning">{%trans 'Deactivate' %}</div>{% else %}<div class="alert-info">{%trans 'Active' %}</div>{% endif %}
+													</td>
+												</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					<!-- END CONTENT -->
+				</div>
+			</div>
+		</div>
+		{% include "admin/footer.html" %}
+	</body>
+</html>

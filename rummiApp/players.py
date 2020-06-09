@@ -56,7 +56,9 @@ def registerUser(request):
         from .services import sendPin
         sendPin(request)
         if request.POST.get('oper') == 'register':
-            from .models import tmpPINForm
+            from .models import tmpPIN, tmpPINForm
+            dataOldPin = tmpPIN.objects.filter(email=request.POST.get('email', False))
+            dataOldPin.delete()
             formData = tmpPINForm({"email": request.POST.get('email', False), "pin": request.session.get('userpin', '-1')})
             formData.save()
         context['msg'] = _('PINSent')
@@ -201,12 +203,7 @@ def addPlayer(request, data=None):
 
 def detailsPlayer(pk):
     from .models import Player
-    import datetime
-    import pytz
-    context = {'msg': ''}
-    context['timeNow'] = pytz.timezone('America/Bogota').localize(datetime.datetime.now())
-    context['data'] = get_object_or_404(Player, userId=pk)
-    return context
+    return get_object_or_404(Player, userId=pk)
 
 
 def findPlayerUserId(pk):

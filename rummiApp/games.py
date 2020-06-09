@@ -2,10 +2,9 @@ from django.utils.translation import gettext as _
 
 
 def detailsGameInfo(gameId, userId):
-    from .models import GameSet, Player
-    from django.shortcuts import get_object_or_404, get_list_or_404
-    playerData = get_object_or_404(Player, userId=userId, status='1')
-    get_object_or_404(GameSet, gameId=gameId, playerId=playerData.id)
+    from .models import GameSet
+    from django.shortcuts import get_list_or_404
+    get_list_or_404(GameSet, gameId=gameId, userId=userId)
     return get_list_or_404(GameSet, gameId=gameId)
 
 
@@ -22,26 +21,25 @@ def viewGameCode(code):
 
 
 def viewMyGames(userId):
-    from .models import GameSet, Player
-    from django.shortcuts import get_list_or_404, get_object_or_404
-    playerData = get_object_or_404(Player, userId=userId, status='1')
-    return get_list_or_404(GameSet, playerId=playerData.id, set=1)
+    from .models import GameSet
+    from django.shortcuts import get_list_or_404
+    return get_list_or_404(GameSet, userId=userId, set=1)
 
 
 def addGame(request):
-    from .models import GameForm, GameSetForm, Player
-    from django.shortcuts import get_object_or_404
+    from .models import GameForm, GameSetForm
     import random
     import string
-    playerData = get_object_or_404(Player, userId=request.user.id, status='1')
     formData = GameForm(request.POST)
     if formData.is_valid():
-        gameObj = formData.save()
+        gameObj = formData.save(commit=False)
+        gameObj.userId = request.user
+        gameObj.playersPos = str(request.user.id)+",,,,"
+        gameObj.save()
         gameObj.code = ''.join(random.choice(string.ascii_letters) for i in range(4))+str(gameObj.pk)
-        gameObj.playersPos = str(request.user.id)+","
         gameObj.save()
         gpObj = GameSetForm({'set': 1, 'fullDraw': request.POST.get('fullDraw')[0:1] == "1",
-                            "points": 0, "playerId": playerData.id, "gameId": gameObj.pk, "current_cards": "", "chairPos": 1})
+                            "points": 0, "userId": request.user.id, "gameId": gameObj.pk, "current_cards": ""})
         try:
             gpObj.save()
         except Exception:
@@ -51,30 +49,66 @@ def addGame(request):
         return _('WrongData')
 
 
+def leaveGame(request):
+    from .models import Game, GameSet
+    from django.shortcuts import get_object_or_404
+    gameInfo = get_object_or_404(Game, id=request.POST.get('gameId'))
+    if gameInfo.started != 0:
+        return _('CannotLeaveGameStarted')
+    # If Admin, check no players
+    if gameInfo.userId.id == request.user.id:
+        if gameInfo.playersPos != str(request.user.id)+',,,,':
+            return _('CannotLeaveYouAreAdminAlreadyPlayers')
+        # delete game and all gamesets for that game
+        gameSetInfo = GameSet.objects.filter(gameId=request.POST.get('gameId'))
+        gameSetInfo.delete()
+        gameInfo.delete()
+        return "1|"+_('Left&Deleted')
+    gameSetInfo = GameSet.objects.filter(gameId=request.POST.get('gameId'), userId=request.user.id)
+    if len(gameSetInfo) == 0:
+        return _("NotInGame")
+    players = ""
+    for player in gameInfo.playersPos.split(","):
+        if player != str(request.user.id):
+            players += player+","
+        else:
+            players += ","
+    gameInfo.playersPos = players[:-1]
+    gameInfo.save()
+    gameSetInfo.delete()
+    return "1|"+_('Left')
+
+
 def joinGame(request):
-    from .models import GameSetForm, GameSet, Player, Game
+    from .models import GameSetForm, GameSet, Game
     from django.shortcuts import get_object_or_404
     from django.http import Http404
     code = request.POST.get('code')
     if request.POST.get("pos") == '' or not request.POST.get("pos").isnumeric() or int(request.POST.get("pos")) >= 5:
         return _('WronPlace')
     pos = int(request.POST.get("pos"))
-    playerData = get_object_or_404(Player, userId=request.user.id, status='1')
     gameInfo = get_object_or_404(Game, code=code)
+    if gameInfo.started == 1:
+        return _('GameHasStarted')
     try:
-        get_object_or_404(GameSet, gameId=gameInfo.id, playerId=playerData.id)
+        get_object_or_404(GameSet, gameId=gameInfo.id, userId=request.user.id)
         return _('AlreadyInGame')
     except Http404:
         pass
-    gpObj = GameSetForm({'set': 1, 'fullDraw': gameInfo.fullDraw[0:1] == "1",
-                        "points": 0, "playerId": playerData.id, "gameId": gameInfo.id, "current_cards": "", "chairPos": pos})
-    gpObj.save()
+
     # check if the sit is available
-    playerPos = gameInfo.playersPos.strip(",").split(",")
-    if len(playerPos) > 5:
-        return _('NoSitAvailable')
+    playerPos = gameInfo.playersPos.split(",")
+    if playerPos[pos] != "":
+        return _('PlaceNotAvailable')
+    if GameSet.objects.filter(gameId=gameInfo.id, set=1).count() >= gameInfo.maxPlayers:
+        return _('TableFull')
+    gpObj = GameSetForm({'set': 1, 'fullDraw': gameInfo.fullDraw[0:1] == "1",
+                        "points": 0, "userId": request.user.id, "gameId": gameInfo.id, "current_cards": ""})
+    gpObj.save()
     # add the userId to the position
-    gameInfo.playersPos += str(request.user.id)+","
+    playerPos[pos] = request.user.id
+
+    gameInfo.playersPos = ",".join(str(x) for x in playerPos)
     gameInfo.save()
     return "1|"+_('Joined')
 
@@ -143,7 +177,7 @@ def dealCards(request):
     from .models import Game, GameSet
     gameId = request.POST.get("gameId")
     gameData = get_object_or_404(Game, id=gameId)
-    players = gameData.playersPos.strip(",").split(",")
+    players = gameData.playersPos.split(",")
     if players[gameData.currentPlayerPos] != str(request.user.id):
         return _('YouAreNotDealingThisGame')
     if gameData.current_stack != '':
@@ -170,15 +204,14 @@ def dealCards(request):
 
 
 def pickCard(request):
-    from .models import Game, Player, GameSet
+    from .models import Game, GameSet
     from django.shortcuts import get_object_or_404
     gameId = request.POST.get('gameId')
-    playerData = get_object_or_404(Player, userId=request.user.id, status='1')
     gameData = get_object_or_404(Game, pk=gameId)
-    gameSetData = get_object_or_404(GameSet, gameId=gameId, playerId=playerData.id, set=gameData.current_set)
-    if not canPlay(gameData, playerData.userId.id):
+    gameSetData = get_object_or_404(GameSet, gameId=gameId, userId=request.user.id, set=gameData.current_set)
+    if not canPlay(gameData, request.user.id):
         return _('NotYourTurn')
-    if gameSetData.moveStatus != 1:
+    if gameData.moveStatus != 1:
         return _('AlreadyPick')
     if request.POST.get("stack") == '1':
         return pickFromStack(gameData, gameSetData)
@@ -191,12 +224,11 @@ def pickCard(request):
 
 
 def discardCard(request):
-    from .models import Game, Player, GameSet
+    from .models import Game, GameSet
     from django.shortcuts import get_object_or_404
     gameId = request.POST.get('gameId')
-    playerData = get_object_or_404(Player, userId=request.user.id, status='1')
     gameData = get_object_or_404(Game, pk=gameId)
-    if not canPlay(gameData, playerData.userId.id):
+    if not canPlay(gameData, request.user.id):
         return _('NotYourTurn')
     if request.POST.get("out", '-1') == '-1':
         return _('PickCardToDiscard')
@@ -206,18 +238,16 @@ def discardCard(request):
     # find user discard position
     playerPos = gameData.playersPos.split(",")
     pos = 0
-    gameSetData = get_object_or_404(GameSet, gameId=gameId, playerId=playerData.id, set=gameData.current_set)
-    if gameSetData.moveStatus == 1:
+    gameSetData = get_object_or_404(GameSet, gameId=gameId, userId=request.user.id, set=gameData.current_set)
+    if gameData.moveStatus == 1:
         return _('PickCardFirst')
     if card+"," not in gameSetData.current_cards:
         return _('CardNotInYourGame')
-    # check if pick from discarded, cannot discard same card
-    if gameSetData.moveStatus == 3 and gameSetData.current_cards[-3:-1] == card:
+    # check if pick from discarded, cannot discard same card, check there are not 2 of the same card
+    if gameData.moveStatus == 3 and gameSetData.current_cards[-3:-1] == card and card not in gameSetData.current_cards[:-3]:
         return _('CannotDiscardPickedFromDiscard')
     for player in playerPos:
-        if player == '':
-            return _('GeneralError')
-        if player == str(gameSetData.playerId.userId.id):
+        if player != '' and player == str(gameSetData.userId.id):
             break
         pos += 1
     # add card in discarded pos
@@ -234,34 +264,58 @@ def discardCard(request):
     gameData.save()
     # remove card from user cards
     gameSetData.current_cards = gameSetData.current_cards.replace(card+",", "", 1)
-    gameSetData.moveStatus = 1
+    gameData.moveStatus = 1
+    gameData.save()
     gameSetData.save()
     if checkEndSet(gameSetData.current_cards, gameData):
-        return "1|"+_('GameEnded')
+        return "2|"+_('GameEnded')
     # move turn to next player
     moveTurn(gameData)
-    return _('Descarted')
+    return "1|"+_('Descarted')
+
+
+# chage the cards order
+def cardsOrder(request):
+    from .models import Game, GameSet
+    from django.shortcuts import get_object_or_404
+    gameId = request.POST.get('gameId')
+    cards = request.POST.get('cards', "").strip(",").split(",")
+    gameData = get_object_or_404(Game, pk=gameId)
+    gameSetData = get_object_or_404(GameSet, gameId=gameId,
+                                    userId=request.user.id, set=gameData.current_set)
+    currentCards = gameSetData.current_cards.strip(",").split(",")
+    currentCards.sort()
+    # check if same number of cards
+    if len(cards) != len(currentCards):
+        return _('WrongCards')
+    # order arrays to check if same cards
+    cardsS = request.POST.get('cards', "").strip(",").split(",")
+    cardsS.sort()
+    if cardsS != currentCards:
+        return _('WrongCards')
+    gameSetData.current_cards = request.POST.get('cards', "")
+    gameSetData.save()
+    return '1'
 
 
 # draw own game
 # drawCards, 2S,2H,2C|0D,JD,QD,KD|4S,4S,4C
 # set, gameId
 def draw(request):
-    from .models import Player, GameSet, Game
+    from .models import GameSet, Game
     from django.shortcuts import get_object_or_404
-    playerData = get_object_or_404(Player, userId=request.user.id, status='1')
     gameId = request.POST.get('gameId')
     gameData = get_object_or_404(Game, pk=gameId)
-    if not canPlay(gameData, playerData.userId.id):
+    if not canPlay(gameData, request.user.id):
         return _('NotYourTurn')
     gameSetData = get_object_or_404(GameSet, gameId=gameId,
-                                    playerId=playerData.id, set=gameData.current_set)
+                                    userId=request.user.id, set=gameData.current_set)
     # check not drawn already
     if gameSetData.drawn != '':
         return _('AlreadyDrawn')
-    if gameSetData.moveStatus == 1:
+    if gameData.moveStatus == 1:
         return _('PickCardFirst')
-    if gameSetData.moveStatus == 4:
+    if gameData.moveStatus == 4:
         return _('AlreadyDrawn')
     # check if cards  in hand
     cardsCheck = request.POST.get('drawCards').replace("|", ",").split(",")
@@ -283,35 +337,35 @@ def draw(request):
         gameSetData.current_cards = gameSetData.current_cards.replace(card+',', '', 1)
     # put drawn cards in drawn user
     gameSetData.drawn = request.POST.get('drawCards')
-    gameSetData.moveStatus = 4
     gameSetData.save()
+    gameData.moveStatus = 4
+    gameData.save()
     if checkEndSet(gameSetData.current_cards, gameData):
-        return "1|"+_('GameEnded')
-    return _('Drawn')
+        return "2|"+_('GameEnded')
+    return "1|"+_('Drawn')
 
 
 # Draw one card in others game
-# set, gameId, drawPlayerId, drawPos
+# set, gameId, drawUserId, drawPos
 def drawOver(request):
-    from .models import Player, GameSet, Game
+    from .models import GameSet, Game
     from django.shortcuts import get_object_or_404
-    playerData = get_object_or_404(Player, userId=request.user.id, status='1')
     gameId = request.POST.get('gameId')
     gameData = get_object_or_404(Game, pk=gameId)
     set = gameData.current_set
-    gameSetData = get_object_or_404(GameSet, gameId=gameId, playerId=playerData.id, set=set)
-    if not canPlay(gameData, playerData.userId.id):
+    gameSetData = get_object_or_404(GameSet, gameId=gameId, userId=request.user.id, set=set)
+    if not canPlay(gameData, request.user.id):
         return _('NotYourTurn')
     drawnGameSetData = get_object_or_404(
-        GameSet, gameId=gameId, playerId=request.POST.get('drawPlayerId'), set=set)
+        GameSet, gameId=gameId, userId=request.POST.get('drawUserId'), set=set)
     # check both users are drawn
     if gameSetData.drawn == '':
         return _('YoCannoDrawOverYet')
     if drawnGameSetData.drawn == '':
         return _('NoGameToDrawIn')
-    if gameSetData.moveStatus == 4:
+    if gameData.moveStatus == 4:
         return _('NoDrawOverOnDraw')
-    if gameSetData.moveStatus == 5:
+    if gameData.moveStatus == 5:
         return _('JustCanOneDrawOver')
     # get other user drawn info
     drawGame = drawnGameSetData.drawn.split('|')[int(request.POST.get('drawPos'))]
@@ -321,55 +375,57 @@ def drawOver(request):
         return _('NotValidCard')
     # check if game is TOAK
     if valThreeOfAKind(drawGame.strip(",")):
-        return putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, playerData.id)
+        return putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, request.user.id)
     # check if game is Straight
     elif valStraight(drawGame.strip(",")):
-        return putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, playerData.id)
+        return putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, request.user.id)
     return _('NotValidDrawOver')
 
 
 # ********* inner calls **********
 
 
-def putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, playerId):
+def putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, userId):
     # is same number add card
     if inCard[0:1] == drawGame[0:1] or drawGame[0:2] == 'XX' or inCard == 'XX':
         drawnGameSetData.drawn = addToDrawn(drawnGameSetData.drawn, int(request.POST.get('drawPos')), inCard)
         drawnGameSetData.save()
         gameSetData.current_cards = gameSetData.current_cards.replace(inCard+",", "", 1)
-        gameSetData.moveStatus = 5
+        gameData.moveStatus = 5
         # if drawn in own game, update own drawn
-        if request.POST.get('drawPlayerId') == str(playerId):
+        if request.POST.get('drawUserId') == str(userId):
             gameSetData.drawn = drawnGameSetData.drawn
+        gameData.save()
         gameSetData.save()
         if checkEndSet(gameSetData.current_cards, gameData):
-            return "1|"+_('GameEnded')
-        return _('DrawOverMade')
+            return "2|"+_('GameEnded')
+        return "1|"+_('DrawOverMade')
 
 
-def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, playerId):
+def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, userId):
     # find if put card at begining or end
     if inCard[0:2] != 'XX':
         pos = checkAppenStrCard(drawGame.strip(",").split(','), inCard)
-    elif request.POST.get("pos") == '1' or request.POST.get("pos") == '2':
+    elif request.POST.get("pos") == '0' or request.POST.get("pos") == '1':
         pos = request.POST.get("pos")
     else:
         return _('NotValidPosJoker')
     if pos == -1:
-        return _('NotValidDrawOver')
+        return _('NotValidPosJoker')
     # put card in other user drawn
     drawnGameSetData.drawn = addToDrawn(drawnGameSetData.drawn, int(request.POST.get('drawPos')), inCard, pos)
     drawnGameSetData.save()
     # remove drawn card from user
     gameSetData.current_cards = gameSetData.current_cards.replace(inCard+",", "", 1)
-    gameSetData.moveStatus = 5
+    gameData.moveStatus = 5
     # if drawn in own game, update own drawn
-    if request.POST.get('drawPlayerId') == str(playerId):
+    if request.POST.get('drawUserId') == str(userId):
         gameSetData.drawn = drawnGameSetData.drawn
     gameSetData.save()
+    gameData.save()
     if checkEndSet(gameSetData.current_cards, gameData):
-        return "1|"+_('GameEnded')
-    return _('DrawOverMade')
+        return "2|"+_('GameEnded')
+    return "1|"+_('DrawOverMade')
 
 
 def addToDrawn(drawn, pos, card, strPos=-1):
@@ -378,7 +434,7 @@ def addToDrawn(drawn, pos, card, strPos=-1):
     newDraw = ''
     for draw in drawPos:
         if i == pos:
-            if strPos == 0:
+            if strPos == "0":
                 # put at the begining
                 newDraw += card+","+draw+"|"
             else:
@@ -404,7 +460,8 @@ def pickFromStack(gameData, gameSetData):
     gameData.current_stack = gameData.current_stack[0:-3]
     gameData.save()
     gameSetData.current_cards += card+","
-    gameSetData.moveStatus = 2
+    gameData.moveStatus = 2
+    gameData.save()
     gameSetData.save()
     return "1|"+card
 
@@ -412,19 +469,24 @@ def pickFromStack(gameData, gameSetData):
 # get next card from discarded position
 def pickFromDiscarded(gameData, gameSetData):
     # find user discard position
-    playerPos = gameData.playersPos.strip(",").split(",")
-    pos = 0
-    for player in playerPos:
-        if player == '':
-            return _('GeneralError')
-        if player == str(gameSetData.playerId.userId.id):
+    playerPos = gameData.playersPos.split(",")
+    pos = -1
+    for i in range(len(playerPos)):
+        if i == 1:
+            pos = 0
+        if playerPos[i] == str(gameSetData.userId.id):
             break
-        pos += 1
-    # descart pos is the previous to user Pos
-    pos -= 1
-    # if pos = -1 the first user pos is the last one
-    if pos == -1:
-        pos = len(playerPos)-1
+        if playerPos[i] != '':
+            pos = i
+    # if pos = 0 the first user pos is the last active one
+    if pos == -1 and playerPos[4] != "":
+        pos = 4
+    elif pos == -1 and playerPos[3] != "":
+        pos = 3
+    elif pos == -1 and playerPos[2] != "":
+        pos = 2
+    elif pos == -1:
+        pos = 1
     # get discarded card from discard position
     newDiscard = ''
     discardPositions = gameData.current_discarded.split('|')
@@ -442,7 +504,8 @@ def pickFromDiscarded(gameData, gameSetData):
     gameData.current_discarded = newDiscard[0:-1]
     gameData.save()
     gameSetData.current_cards += card+","
-    gameSetData.moveStatus = 3
+    gameData.moveStatus = 3
+    gameData.save()
     gameSetData.save()
     return "1|"+card
 
@@ -457,10 +520,17 @@ def canPlay(gameData, userId):
 
 
 def moveTurn(gameData):
-    playerPos = gameData.playersPos.strip(",").split(",")
-    gameData.currentPlayerPos += 1
-    if gameData.currentPlayerPos >= len(playerPos):
-        gameData.currentPlayerPos = 0
+    playerPos = gameData.playersPos.split(",")
+    pos = gameData.currentPlayerPos+1
+    dd = ""
+    for i in range(gameData.currentPlayerPos+1, len(playerPos)):
+        dd += str(i)+"--"+str(playerPos[i])+"--\n"
+        if str(playerPos[i]) != "":
+            break
+    pos = i
+    if pos >= len(playerPos)-1:
+        pos = 0
+    gameData.currentPlayerPos = pos
     gameData.save()
 
 
@@ -474,7 +544,7 @@ def checkEndSet(cards, gameData):
         for player in players:
             # set player left points
             if player.current_cards != '':
-                setPoints(gameData.id, player.playerId.userId.id, gameData.current_set)
+                setPoints(gameData.id, player.userId.id, gameData.current_set)
         gameData.current_set += 1
         # if last set end Tournament
         if gameData.current_set > 6:
@@ -484,14 +554,30 @@ def checkEndSet(cards, gameData):
         # add new set to all players, check if next set is fullDraw
         for gameSet in gameSetData:
             gpObj = GameSetForm({'set': gameData.current_set, 'fullDraw': gameData.fullDraw[gameData.current_set-1:gameData.current_set] == "1",
-                                "points": 0, "playerId": gameSet.playerId.id, "gameId": gameData.id, "current_cards": "", "chairPos": gameSet.chairPos})
+                                "points": 0, "userId": gameSet.userId.id, "gameId": gameData.id, "current_cards": ""})
             gpObj.save()
         # get players and set who start next round
-        playerPos = gameData.playersPos.strip(",").split(",")
-        next = gameData.current_set % len(playerPos)-1
-        if next == -1:
-            next = len(playerPos)-1
-        gameData.currentPlayerPos = next
+        playerCount = 0
+        playerList = gameData.playersPos.strip(",").split(",")
+        playerList1 = []
+        for player in playerList:
+            if player != "":
+                playerCount += 1
+                playerList1.append(player)
+        # this is the next player pos, but need to skip spaces
+        next = (gameData.current_set - 1) % playerCount
+        i = 0
+        playerPos = 0
+        # fin real position in array
+        for player in playerList:
+            if player == playerList1[next]:
+                playerPos = i
+                break
+            i += 1
+        if playerPos > 4:
+            playerPos = 0
+        gameData.currentPlayerPos = playerPos
+        gameData.moveStatus = 1
         gameData.current_stack = ''
         gameData.current_discarded = '||||'
         gameData.save()
@@ -501,6 +587,7 @@ def checkEndSet(cards, gameData):
 
 # Check if card fits in straight
 def checkAppenStrCard(drawGameCards, inCard):
+    drawGameCards = replaceAllJokers(drawGameCards)
     # check is same color
     if drawGameCards[0][1:2] != inCard[1:2]:
         return -1
@@ -618,7 +705,35 @@ def valStraight(cards):
     return True
 
 
-def replaceJoker(card):
+def replaceAllJokers(cardList):
+    # remove all initials joker
+    i = 0
+    jokersRemoved = 0
+    while i < len(cardList):
+        if cardList[i] == 'XX':
+            del cardList[i]
+            jokersRemoved += 1
+            i -= 1
+        else:
+            break
+        i += 1
+    # replace any other joker
+    while i < len(cardList):
+        if cardList[i] == "XX":
+            cardList[i] = replaceJokerFromPrevious(cardList[i-1])
+        i += 1
+    # append jokers again if any
+    for i in range(0, jokersRemoved):
+        cardList.insert(0, "XX")
+    # find values for any initial joker
+    i = jokersRemoved-1
+    while i >= 0:
+        cardList[i] = replaceJokerFromNext(cardList[i+1])
+        i -= 1
+    return cardList
+
+
+def replaceJokerFromPrevious(card):
     if card[0:1] in '2345678':
         return str(int(card[0:1])+1)+card[1:2]
     if card[0:1] == '9':
@@ -627,8 +742,29 @@ def replaceJoker(card):
         return "J"+card[1:2]
     if card[0:1] == 'J':
         return "Q"+card[1:2]
+    if card[0:1] == 'Q':
+        return "K"+card[1:2]
+    if card[0:1] == 'K':
+        return "A"+card[1:2]
+    if card[0:1] == 'A':
+        return "2"+card[1:2]
+
+
+def replaceJokerFromNext(card):
+    if card[0:1] in '3456789':
+        return str(int(card[0:1])-1)+card[1:2]
     if card[0:1] == '0':
+        return "9"+card[1:2]
+    if card[0:1] == 'J':
+        return "0"+card[1:2]
+    if card[0:1] == 'Q':
         return "J"+card[1:2]
+    if card[0:1] == 'K':
+        return "Q"+card[1:2]
+    if card[0:1] == 'A':
+        return "K"+card[1:2]
+    if card[0:1] == '2':
+        return "A"+card[1:2]
 
 
 def removeInitialJokers(cardList):
@@ -664,11 +800,10 @@ def valThreeOfAKind(cards):
 
 # set points left in player hand
 def setPoints(gameId, userId, set):
-    from .models import GameSet, Player
+    from .models import GameSet
     from django.shortcuts import get_object_or_404
-    playerData = get_object_or_404(Player, userId=userId, status='1')
     gameSetData = get_object_or_404(GameSet, gameId=gameId,
-                                    playerId=playerData.id, set=set)
+                                    userId=userId, set=set)
     cards = gameSetData.current_cards.strip(",").split(',')
     points = 0
     for card in cards:

@@ -18,12 +18,13 @@ class Game(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     playersPos = models.CharField(max_length=100, default=',,,,')
     currentPlayerPos = models.IntegerField(default=0)
+    moveStatus = models.IntegerField(default=1)
 
 
 class GameForm(ModelForm):
     class Meta:
         model = Game
-        fields = ['name', 'private', 'fullDraw', 'speed', 'maxPlayers', 'userId']
+        fields = ['name', 'private', 'fullDraw', 'speed', 'maxPlayers']
 
 
 class GameFormEdit(ModelForm):
@@ -49,7 +50,7 @@ class Player(models.Model):
 class PlayerForm(ModelForm):
     class Meta:
         model = Player
-        fields = ['status', 'nickname', 'userId', 'name', 'lastname', 'city', 'country', 'birthDate', 'extension', 'gender', 'notifications']
+        fields = ['status', 'nickname', 'name', 'lastname', 'city', 'country', 'birthDate', 'extension', 'gender', 'notifications']
 
 
 class GameSet(models.Model):
@@ -57,27 +58,26 @@ class GameSet(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     fullDraw = models.BooleanField(default=False)
     points = models.IntegerField(default=0)
-    playerId = models.ForeignKey(Player, on_delete=models.CASCADE)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE)
     gameId = models.ForeignKey(Game, on_delete=models.CASCADE)
     current_cards = models.CharField(max_length=500, default='')
     drawn = models.CharField(max_length=100, default='')
-    chairPos = models.IntegerField()
-    moveStatus = models.IntegerField(default=1)
 
     class Meta:
-        unique_together = ('playerId', 'gameId', 'set', 'chairPos')
+        unique_together = ('userId', 'gameId', 'set')
 
 
 class GameSetForm(ModelForm):
     class Meta:
         model = GameSet
-        fields = ['set', 'fullDraw', 'points', 'playerId', 'gameId', 'chairPos']
+        fields = ['set', 'fullDraw', 'points', 'userId', 'gameId']
 
 
 class GameMessages(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-    msg = models.CharField(max_length=1500)
+    msg = models.CharField(max_length=150)
+    gameId = models.ForeignKey(Game, on_delete=models.CASCADE)
 
 
 class MessagesForm(ModelForm):
@@ -89,6 +89,9 @@ class MessagesForm(ModelForm):
 class tmpPIN(models.Model):
     email = models.CharField(max_length=150)
     pin = models.CharField(max_length=6)
+
+    class Meta:
+        unique_together = ('email', 'pin')
 
 
 class tmpPINForm(ModelForm):

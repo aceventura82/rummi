@@ -248,7 +248,7 @@ def discardCard(request):
     if card+"," not in gameSetData.current_cards:
         return _('CardNotInYourGame')
     # check if pick from discarded, cannot discard same card, check there are not 2 of the same card
-    if gameData.moveStatus == 3 and gameSetData.current_cards[-3:-1] == card and card not in gameSetData.current_cards[:-3]:
+    if gameData.moveStatus == 3 and gameData.picked_discard == card and len(gameSetData.current_cards.split(card+",")) == 2:
         return _('CannotDiscardPickedFromDiscard')
     for player in playerPos:
         if player != '' and player == str(gameSetData.userId.id):
@@ -269,6 +269,7 @@ def discardCard(request):
     # remove card from user cards
     gameSetData.current_cards = gameSetData.current_cards.replace(card+",", "", 1)
     gameData.moveStatus = 1
+    gameData.picked_discard = None
     gameData.save()
     gameSetData.save()
     if checkEndSet(gameSetData.current_cards, gameData):
@@ -509,6 +510,7 @@ def pickFromDiscarded(gameData, gameSetData):
     gameData.save()
     gameSetData.current_cards += card+","
     gameData.moveStatus = 3
+    gameData.picked_discard = card
     gameData.save()
     gameSetData.save()
     return "1|"+card

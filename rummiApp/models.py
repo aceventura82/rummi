@@ -19,6 +19,7 @@ class Game(models.Model):
     playersPos = models.CharField(max_length=100, default=',,,,')
     currentPlayerPos = models.IntegerField(default=0)
     moveStatus = models.IntegerField(default=1)
+    picked_discard = models.CharField(max_length=2, null=True, blank=True)
 
 
 class GameForm(ModelForm):

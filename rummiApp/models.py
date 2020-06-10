@@ -7,7 +7,7 @@ class Game(models.Model):
     name = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)
     private = models.BooleanField(default=False, db_index=True)
-    started = models.CharField(default="0")
+    started = models.CharField(max_length=1, default="0")
     fullDraw = models.CharField(max_length=6, default='')
     speed = models.IntegerField(default=5)
     maxPlayers = models.IntegerField(default=4)

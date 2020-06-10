@@ -7,7 +7,7 @@ class Game(models.Model):
     name = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)
     private = models.BooleanField(default=False, db_index=True)
-    started = models.BooleanField(default=False)
+    started = models.CharField(default="0")
     fullDraw = models.CharField(max_length=6, default='')
     speed = models.IntegerField(default=5)
     maxPlayers = models.IntegerField(default=4)
@@ -80,10 +80,10 @@ class GameMessages(models.Model):
     gameId = models.ForeignKey(Game, on_delete=models.CASCADE)
 
 
-class MessagesForm(ModelForm):
+class GameMessagesForm(ModelForm):
     class Meta:
         model = GameMessages
-        fields = ['userId', 'msg']
+        fields = ['msg', 'gameId']
 
 
 class tmpPIN(models.Model):

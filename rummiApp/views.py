@@ -347,3 +347,14 @@ class APIViews():
         if request.session.get('msg') == _('PasswordChanged'):
             return 'OK|'+_('PasswordChanged')
         return request.session.get('msg')
+
+    @login_required
+    def getMessages(request):
+        from .messages import getMessages
+        return APIViews.dataToJSON(getMessages(request))
+
+    @login_required
+    def addMessage(request):
+        from .messages import addMessage
+        addMessage(request)
+        return ''

@@ -53,7 +53,7 @@ def leaveGame(request):
     from .models import Game, GameSet
     from django.shortcuts import get_object_or_404
     gameInfo = get_object_or_404(Game, id=request.POST.get('gameId'))
-    if gameInfo.started != 0:
+    if gameInfo.started != "0":
         return _('CannotLeaveGameStarted')
     # If Admin, check no players
     if gameInfo.userId.id == request.user.id:
@@ -88,8 +88,10 @@ def joinGame(request):
         return _('WronPlace')
     pos = int(request.POST.get("pos"))
     gameInfo = get_object_or_404(Game, code=code)
-    if gameInfo.started == 1:
+    if gameInfo.started == "1":
         return _('GameHasStarted')
+    if gameInfo.started == "2":
+        return _('GameHasEnded')
     try:
         get_object_or_404(GameSet, gameId=gameInfo.id, userId=request.user.id)
         return _('AlreadyInGame')
@@ -143,15 +145,17 @@ def startGame(request):
     from django.shortcuts import get_object_or_404
     gameId = request.POST.get('gameId')
     gameData = get_object_or_404(Game, pk=gameId, userId=request.user.id)
-    if gameData.started is True:
+    if gameData.started == "1":
         return _('GameAlreadyStarted')
+    if gameData.started == "2":
+        return _('GameHasEnded')
     playerPos = gameData.playersPos.split(",")
     val = 0
     for pl in playerPos:
         if pl != '':
             val += 1
     if val > 1:
-        gameData.started = True
+        gameData.started = "1"
         gameData.save()
         return "1|"+_('GameStarted')
     return _('CannotStartOneUser')
@@ -411,7 +415,7 @@ def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDat
     else:
         return _('NotValidPosJoker')
     if pos == -1:
-        return _('NotValidPosJoker')
+        return _('NotValidDrawOver')
     # put card in other user drawn
     drawnGameSetData.drawn = addToDrawn(drawnGameSetData.drawn, int(request.POST.get('drawPos')), inCard, pos)
     drawnGameSetData.save()
@@ -514,7 +518,7 @@ def canPlay(gameData, userId):
     playerPos = gameData.playersPos.split(",")
     if playerPos[gameData.currentPlayerPos] == str(userId):
         return True
-    if not gameData.started:
+    if gameData.started != "1":
         return False
     return False
 
@@ -548,6 +552,8 @@ def checkEndSet(cards, gameData):
         gameData.current_set += 1
         # if last set end Tournament
         if gameData.current_set > 6:
+            gameData.started = "2"
+            gameData.save()
             return True
         # get all players from set 1
         gameSetData = get_list_or_404(GameSet, gameId=gameData.id, set=1)

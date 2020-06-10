@@ -26,7 +26,7 @@ def listPlayers(request):
 
 
 def registerUser(request):
-    context = {"msg": ""}
+    context = {"msg": "", "value": ""}
     if (request.POST.get('valEmailBT', False) and request.POST.get('PINEmail', '') == request.session.get('userpin', '-1')) or request.session.get('valURL', False):
         # PIN ok, try to authenticate
         valAuth = authCreate(request)

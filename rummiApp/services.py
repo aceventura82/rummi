@@ -11,7 +11,7 @@ def sendPin(request, mail=False):
     msg = _("PinMessage").replace('%(pin)', str(pin)).replace('%(url)', 'http://'+request.META['HTTP_HOST']+'/?q='+data.decode("utf-8"))
     request.session['userpin'] = str(pin)
     email = request.POST.get('email', False)
-    sendMail([email], _('PinSubject'), msg)
+    sendMail([email], _('PinSubject'), msg+" "+str(pin))
 
 
 def sendMail(dest, subject, body, fromEmail=(settings.FROMEMAIL)):

@@ -51,7 +51,7 @@ class Player(models.Model):
 class PlayerForm(ModelForm):
     class Meta:
         model = Player
-        fields = ['status', 'nickname', 'name', 'lastname', 'city', 'country', 'birthDate', 'extension', 'gender', 'notifications']
+        fields = ['status', 'userId', 'nickname', 'name', 'lastname', 'city', 'country', 'birthDate', 'extension', 'gender', 'notifications']
 
 
 class GameSet(models.Model):

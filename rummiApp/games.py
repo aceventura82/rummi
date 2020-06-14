@@ -23,7 +23,20 @@ def viewGameCode(code):
 def viewMyGames(userId):
     from .models import GameSet
     from django.shortcuts import get_list_or_404
-    return get_list_or_404(GameSet, userId=userId, set=1)
+    return get_list_or_404(GameSet.objects.order_by("gameId__started", "-gameId__date"), userId=userId, set=1)[:50]
+
+
+def myTurn(userId):
+    from .models import GameSet
+    from django.shortcuts import get_list_or_404
+    games = ""
+    for game in get_list_or_404(GameSet, userId=userId, set=1):
+        playerPos = game.gameId.playersPos.split(",")
+        if str(playerPos[game.gameId.currentPlayerPos]) == str(userId):
+            games += str(game.gameId.id)+","
+    if games == "":
+        return ""
+    return games[:-1]
 
 
 def addGame(request):
@@ -44,6 +57,18 @@ def addGame(request):
             gpObj.save()
         except Exception:
             return _('GeneralError')
+        # add new player flow message
+        from .models import GameFlowForm, Player
+        from django.shortcuts import get_object_or_404
+        playerData = get_object_or_404(Player, userId=request.user.id)
+        playerName = playerData.userId.email.split("@")[0]
+        if playerData.nickname is not None and playerName != "":
+            playerName = playerData.nickname
+        elif playerData.name is not None and playerData.name != "":
+            playerName = playerData.name
+        formData = GameFlowForm({"msg": playerName+": "+_('CreatedGame'), "gameId": gameObj.pk})
+        formData.save()
+        updateDate(0, request.user.id)
         return str(gameObj.pk)+"|"+_('GameCreated')
     else:
         return _('WrongData')
@@ -74,6 +99,7 @@ def leaveGame(request):
         else:
             players += ","
     gameInfo.playersPos = players[:-1]
+    updateDate(request.POST.get('gameId'))
     gameInfo.save()
     gameSetInfo.delete()
     return "1|"+_('Left')
@@ -97,7 +123,6 @@ def joinGame(request):
         return _('AlreadyInGame')
     except Http404:
         pass
-
     # check if the sit is available
     playerPos = gameInfo.playersPos.split(",")
     if playerPos[pos] != "":
@@ -109,9 +134,19 @@ def joinGame(request):
     gpObj.save()
     # add the userId to the position
     playerPos[pos] = request.user.id
-
     gameInfo.playersPos = ",".join(str(x) for x in playerPos)
     gameInfo.save()
+    # add new player flow message
+    from .models import GameFlowForm, Player
+    playerData = get_object_or_404(Player, userId=request.user.id)
+    playerName = playerData.userId.email.split("@")[0]
+    if playerData.nickname is not None and playerName != "":
+        playerName = playerData.nickname
+    elif playerData.name is not None and playerData.name != "":
+        playerName = playerData.name
+    formData = GameFlowForm({"msg": playerName+": "+_('Joined'), "gameId": gameInfo.id})
+    formData.save()
+    updateDate(gameInfo.id)
     return "1|"+_('Joined')
 
 
@@ -123,6 +158,7 @@ def editGame(request):
     formData = GameFormEdit(request.POST, instance=gameData)
     if formData.is_valid():
         formData.save()
+        updateDate(request.POST.get('gameId'))
         return "1|"+_('Edited')
     else:
         return _('WrongData')
@@ -137,6 +173,7 @@ def deleteGame(request):
     if userCount > 1:
         return _('CannotDeleteHasUser')
     gameData.delete()
+    updateDate(0, request.user.id)
     return "1|"+_('Deleted')
 
 
@@ -157,6 +194,7 @@ def startGame(request):
     if val > 1:
         gameData.started = "1"
         gameData.save()
+        updateDate(request.POST.get('gameId'))
         return "1|"+_('GameStarted')
     return _('CannotStartOneUser')
 
@@ -204,6 +242,7 @@ def dealCards(request):
     # set the remains card to the stack
     gameData.current_stack = ",".join(str(x) for x in cards)+","
     gameData.save()
+    updateDate(request.POST.get('gameId'))
     return "1|"+_('Dealt')
 
 
@@ -272,6 +311,7 @@ def discardCard(request):
     gameData.picked_discard = None
     gameData.save()
     gameSetData.save()
+    updateDate(gameId)
     if checkEndSet(gameSetData.current_cards, gameData):
         return "2|"+_('GameEnded')
     # move turn to next player
@@ -300,6 +340,7 @@ def cardsOrder(request):
         return _('WrongCards')
     gameSetData.current_cards = request.POST.get('cards', "")
     gameSetData.save()
+    updateDate(0, request.user.id)
     return '1'
 
 
@@ -345,6 +386,7 @@ def draw(request):
     gameSetData.save()
     gameData.moveStatus = 4
     gameData.save()
+    updateDate(gameData.id)
     if checkEndSet(gameSetData.current_cards, gameData):
         return "2|"+_('GameEnded')
     return "1|"+_('Drawn')
@@ -402,6 +444,7 @@ def putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDa
             gameSetData.drawn = drawnGameSetData.drawn
         gameData.save()
         gameSetData.save()
+        updateDate(gameData.id)
         if checkEndSet(gameSetData.current_cards, gameData):
             return "2|"+_('GameEnded')
         return "1|"+_('DrawOverMade')
@@ -428,6 +471,7 @@ def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDat
         gameSetData.drawn = drawnGameSetData.drawn
     gameSetData.save()
     gameData.save()
+    updateDate(gameData.id)
     if checkEndSet(gameSetData.current_cards, gameData):
         return "2|"+_('GameEnded')
     return "1|"+_('DrawOverMade')
@@ -439,7 +483,7 @@ def addToDrawn(drawn, pos, card, strPos=-1):
     newDraw = ''
     for draw in drawPos:
         if i == pos:
-            if strPos == "0":
+            if strPos == 0:
                 # put at the begining
                 newDraw += card+","+draw+"|"
             else:
@@ -468,6 +512,7 @@ def pickFromStack(gameData, gameSetData):
     gameData.moveStatus = 2
     gameData.save()
     gameSetData.save()
+    updateDate(gameData.id)
     return "1|"+card
 
 
@@ -513,6 +558,7 @@ def pickFromDiscarded(gameData, gameSetData):
     gameData.picked_discard = card
     gameData.save()
     gameSetData.save()
+    updateDate(gameData.id)
     return "1|"+card
 
 
@@ -528,13 +574,12 @@ def canPlay(gameData, userId):
 def moveTurn(gameData):
     playerPos = gameData.playersPos.split(",")
     pos = gameData.currentPlayerPos+1
-    dd = ""
+    i = 0
     for i in range(gameData.currentPlayerPos+1, len(playerPos)):
-        dd += str(i)+"--"+str(playerPos[i])+"--\n"
         if str(playerPos[i]) != "":
             break
     pos = i
-    if pos >= len(playerPos)-1:
+    if str(playerPos[i]) == "":
         pos = 0
     gameData.currentPlayerPos = pos
     gameData.save()
@@ -555,6 +600,7 @@ def checkEndSet(cards, gameData):
         # if last set end Tournament
         if gameData.current_set > 6:
             gameData.started = "2"
+            gameData.current_set = 6
             gameData.save()
             return True
         # get all players from set 1
@@ -828,8 +874,26 @@ def cardValue(card):
         return int(card[0:1])
     if card[0:1] in "JQK":
         return 10
-    if card[0:1] in "ASAC":
+    if card in "ASAC":
         return 15
-    if card[0:1] in "ADAH":
+    if card in "ADAH":
         return 1
     return 100
+
+
+# update update_date when info changed
+def updateDate(gameId=0, userId=0):
+    from .models import Player, GameSet
+    from django.shortcuts import get_object_or_404, get_list_or_404
+    import datetime
+    # update all users in game
+    if gameId != 0:
+        for player in get_list_or_404(GameSet, gameId=gameId, set=1):
+            p = get_object_or_404(Player, userId=player.userId.id)
+            p.update_date = datetime.datetime.now()-datetime.timedelta(hours=5)
+            p.save()
+    # Update one player
+    else:
+        p = get_object_or_404(Player, userId=userId)
+        p.update_date = datetime.datetime.now()-datetime.timedelta(hours=5)
+        p.save()

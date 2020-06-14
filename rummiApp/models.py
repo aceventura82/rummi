@@ -46,6 +46,7 @@ class Player(models.Model):
     notifications = models.CharField(max_length=5, null=True, blank=True, default='OFF')
     status = models.CharField(max_length=1, null=True, blank=True, db_index=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    update_date = models.DateTimeField(auto_now_add=True)
 
 
 class PlayerForm(ModelForm):
@@ -84,6 +85,18 @@ class GameMessages(models.Model):
 class GameMessagesForm(ModelForm):
     class Meta:
         model = GameMessages
+        fields = ['msg', 'gameId']
+
+
+class GameFlow(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+    msg = models.CharField(max_length=150)
+    gameId = models.ForeignKey(Game, on_delete=models.CASCADE)
+
+
+class GameFlowForm(ModelForm):
+    class Meta:
+        model = GameFlow
         fields = ['msg', 'gameId']
 
 

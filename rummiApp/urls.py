@@ -7,5 +7,6 @@ urlpatterns = [
     path('', views.index, name='Index'),
     path('testing/', views.testing, name='Testing'),
     path('API/app/fetch/', views.APIViews.getData, name='getDataApp'),
+    path('joinGame/<str:code>/', views.joinGame, name='joinGame'),
 
 ]

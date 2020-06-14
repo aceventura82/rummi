@@ -31,25 +31,14 @@ def checkMsg(request, context):
 @csrf_exempt
 def testing(request):
     from django.http import HttpResponse
-    playerCount = 0
-    playerList = "2,4,3,,".strip(",").split(",")
-    playerList1 = []
-    for player in playerList:
-        if player != "":
-            playerCount += 1
-            playerList1.append(player)
-    next = (int(request.POST.get("set")) - 1) % playerCount
-    # return HttpResponse(next)
-    i = 0
-    playerPos = 0
-    for player in playerList:
-        if player == playerList1[next]:
-            playerPos = i
-            break
-        i += 1
-    if playerPos > 4:
-        playerPos = 0
-    return HttpResponse(playerPos)
+    # from django.shortcuts import get_object_or_404
+    # from .models import Game
+    from .games import checkAppenStrCard
+    return HttpResponse(checkAppenStrCard("XX,5D,6D,7D,".strip(",").split(','), '9D'))
+
+
+def joinGame(request, code):
+    return render(request, "open_in_app.html")
 
 
 def changelang(request, lang):
@@ -156,12 +145,12 @@ class APIViews():
         from .players import getUserHash
         import hmac
         import hashlib
+        import datetime
         import pytz
         append = ""
         if user != "":
             append = getUserHash(user)
         salt = bytes('b&w?2jjpiQN4qKiQoazOOdoH_iVQ0HKvXY_Q9hkJ5GRA8a?LZbFgG_va2/X7/Xt_', 'utf-8')
-        import datetime
         t1 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() - datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M")+append
         t2 = pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%Y%m%d%H%M")+append
         t3 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M")+append
@@ -178,7 +167,7 @@ class APIViews():
         try:
             from django.http import HttpResponse
             oper = request.POST.get('oper', '')
-            publicAccess = "tournaments,teams,login,register"
+            publicAccess = "login,register"
             # Set Language
             APIViews.lang(request)
             # check API Key for Non public Opers
@@ -201,6 +190,21 @@ class APIViews():
         except Exception as ex:
             logger("errors", str(ex))
             return HttpResponse('--')
+
+    def bundleData(request):
+        from .models import Player
+        from django.shortcuts import get_object_or_404
+        import datetime
+        import pytz
+        if request.POST.get("update_date", "") != "":
+            dd = pytz.timezone('UTC').localize(datetime.datetime.strptime(request.POST.get("update_date"), '%Y-%m-%d %H:%M:%S'))
+            if get_object_or_404(Player, userId=request.user.id).update_date <= dd:
+                return 'OK'
+        res = APIViews.gameDetailInfo(request)
+        res += '{"messages":1}\n'
+        res += APIViews.getMessages(request)
+        res += '{"flow":1}\n'
+        return res + APIViews.getFlow(request)
 
     def lang(request):
         lang = request.POST.get('lang', 'es')
@@ -308,6 +312,11 @@ class APIViews():
         return result
 
     @login_required
+    def myTurn(request):
+        from .games import myTurn
+        return myTurn(request.user.id)
+
+    @login_required
     def gameDetailInfo(request):
         from .games import detailsGameInfo
         from .models import Player
@@ -354,7 +363,18 @@ class APIViews():
         return APIViews.dataToJSON(getMessages(request))
 
     @login_required
+    def getFlow(request):
+        from .messages import getFlow
+        return APIViews.dataToJSON(getFlow(request))
+
+    @login_required
     def addMessage(request):
         from .messages import addMessage
         addMessage(request)
+        return ''
+
+    @login_required
+    def addToFlow(request):
+        from .messages import addToFlow
+        addToFlow(request)
         return ''

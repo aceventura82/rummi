@@ -226,7 +226,7 @@ def changePass(request):
         request.session['WrongPass'] = 1
         return
     if len(request.POST.get('new_password1', "")) < 6 or all(c.isalpha() == request.POST.get('new_password1', "").isalpha() for c in request.POST.get('new_password1', "")):
-        request.session['msg'] = _('NotValidPass')+str(str(request.POST.get('new_password1', "")).isalpha())
+        request.session['msg'] = _('NotValidPass') + str(str(request.POST.get('new_password1', "")).isalpha())
         request.session['WrongPass'] = 1
         return
     userData.set_password(request.POST.get('new_password1', ""))
@@ -278,4 +278,4 @@ def editPlayer(request, admin=False):
 
 def getUserHash(username):
     UserData = get_object_or_404(User, username=username)
-    return username+"|"+UserData.password
+    return username + "|" + UserData.password

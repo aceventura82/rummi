@@ -35,7 +35,7 @@ def testing(request):
     data = viewMyGames(request.POST.get("userId"))
     result = ""
     for dato in data:
-        if ","+str(dato.gameId.id)+"," not in request.POST.get("ignore", ""):
+        if "," + str(dato.gameId.id) + "," not in request.POST.get("ignore", ""):
             result += APIViews.dataToJSON([dato.gameId])
     return HttpResponse(result)
 
@@ -98,7 +98,7 @@ class PlayerAdminViews():
                 context = detailsPlayer(userId)
             except Http404:
                 request.session['msg'] = _('UserNotFound')
-                return redirect('/'+settings.ADMIN_URL+"player/")
+                return redirect('/' + settings.ADMIN_URL + "player/")
             context['status'] = "checked"
             if context['data'].status != '1':
                 context['status'] = ""
@@ -118,7 +118,7 @@ class APIViews():
         from .players import loginUserPass
         context = loginUserPass(request)
         if 'auth' in context:
-            return HttpResponse(context['auth']+"|"+request.user.password)
+            return HttpResponse(context['auth'] + "|" + request.user.password)
         else:
             return HttpResponse(context['msg'])
 
@@ -135,9 +135,9 @@ class APIViews():
                 request.session['userpin'] = str(ex)
         context = registerUser(request)
         if context['value'] == 'registered':
-            return HttpResponse("1|"+context['msg'])
+            return HttpResponse("1|" + context['msg'])
         if context['value'] == 'sent' and context['msg'] == _('PINSent'):
-            return HttpResponse("1|"+context['msg'])
+            return HttpResponse("1|" + context['msg'])
         if context['value'] == 'registered':
             return HttpResponse(context['msg'])
         else:
@@ -159,9 +159,9 @@ class APIViews():
         if user != "":
             append = getUserHash(user)
         salt = bytes('b&w?2jjpiQN4qKiQoazOOdoH_iVQ0HKvXY_Q9hkJ5GRA8a?LZbFgG_va2/X7/Xt_', 'utf-8')
-        t1 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() - datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M")+append
-        t2 = pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%Y%m%d%H%M")+append
-        t3 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M")+append
+        t1 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() - datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M") + append
+        t2 = pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%Y%m%d%H%M") + append
+        t3 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M") + append
         dig1 = hmac.new(salt, bytes(t1, 'utf-8'), hashlib.sha256).hexdigest()
         dig2 = hmac.new(salt, bytes(t2, 'utf-8'), hashlib.sha256).hexdigest()
         dig3 = hmac.new(salt, bytes(t3, 'utf-8'), hashlib.sha256).hexdigest()
@@ -227,13 +227,13 @@ class APIViews():
             for attr, value in data.__dict__.items():
                 if attr == '_state':
                     continue
-                elif ","+attr in ',date,startDate,endDate':
+                elif "," + attr in ',date,startDate,endDate':
                     import datetime
                     import pytz
                     dd = pytz.timezone('America/Bogota').localize(datetime.datetime.strptime(str(value)[0:19], '%Y-%m-%d %H:%M:%S')) + datetime.timedelta(hours=-5)
-                    result += '"'+append+attr+'":"'+APIViews.valValue(str(dd.strftime('%Y-%m-%d %H:%M:%S')))+'",'
+                    result += '"' + append + attr + '":"' + APIViews.valValue(str(dd.strftime('%Y-%m-%d %H:%M:%S'))) + '",'
                 else:
-                    result += '"'+append+attr+'":"'+APIViews.valValue(str(value))+'",'
+                    result += '"' + append + attr + '":"' + APIViews.valValue(str(value)) + '",'
             result = result[:-1] + '}\n'
         return result
 
@@ -316,7 +316,7 @@ class APIViews():
         data = viewMyGames(request.user.id)
         result = ""
         for dato in data:
-            if ","+str(dato.gameId.id)+"," not in request.POST.get("ignore", ""):
+            if "," + str(dato.gameId.id) + "," not in request.POST.get("ignore", ""):
                 result += APIViews.dataToJSON([dato.gameId])
         return result
 
@@ -333,7 +333,7 @@ class APIViews():
         data = detailsGameInfo(request.POST.get('gameId'), request.user.id)
         result = ""
         for dato in data:
-            result += APIViews.dataToJSON([dato.gameId])[:-2]+","
+            result += APIViews.dataToJSON([dato.gameId])[:-2] + ","
             result += APIViews.dataToJSON([dato], "set_")[1:]
             name = dato.userId.email.split("@")[0]
             playerData = get_object_or_404(Player, userId=dato.userId.id)
@@ -341,7 +341,7 @@ class APIViews():
                 name = playerData.nickname
             elif playerData.name is not None and playerData.name != "":
                 name = playerData.name
-            result = result[:-2]+',"name":"'+name+'"}\n'
+            result = result[:-2] + ',"name":"' + name + '"}\n'
         return result
 
     @login_required
@@ -363,7 +363,7 @@ class APIViews():
         from .players import changePass
         changePass(request)
         if request.session.get('msg') == _('PasswordChanged'):
-            return 'OK|'+_('PasswordChanged')
+            return 'OK|' + _('PasswordChanged')
         return request.session.get('msg')
 
     @login_required

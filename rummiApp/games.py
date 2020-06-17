@@ -33,7 +33,7 @@ def myTurn(userId):
     for game in get_list_or_404(GameSet, userId=userId, set=1):
         playerPos = game.gameId.playersPos.split(",")
         if str(playerPos[game.gameId.currentPlayerPos]) == str(userId):
-            games += str(game.gameId.id)+","
+            games += str(game.gameId.id) + ","
     if games == "":
         return ""
     return games[:-1]
@@ -47,9 +47,9 @@ def addGame(request):
     if formData.is_valid():
         gameObj = formData.save(commit=False)
         gameObj.userId = request.user
-        gameObj.playersPos = str(request.user.id)+",,,,"
+        gameObj.playersPos = str(request.user.id) + ",,,,"
         gameObj.save()
-        gameObj.code = ''.join(random.choice(string.ascii_letters) for i in range(4))+str(gameObj.pk)
+        gameObj.code = ''.join(random.choice(string.ascii_letters) for i in range(4)) + str(gameObj.pk)
         gameObj.save()
         gpObj = GameSetForm({'set': 1, 'fullDraw': request.POST.get('fullDraw')[0:1] == "1",
                             "points": 0, "userId": request.user.id, "gameId": gameObj.pk, "current_cards": ""})
@@ -66,10 +66,10 @@ def addGame(request):
             playerName = playerData.nickname
         elif playerData.name is not None and playerData.name != "":
             playerName = playerData.name
-        formData = GameFlowForm({"msg": playerName+": "+_('CreatedGame'), "gameId": gameObj.pk})
+        formData = GameFlowForm({"msg": playerName + ": " + _('CreatedGame'), "gameId": gameObj.pk})
         formData.save()
         updateDate(0, request.user.id)
-        return str(gameObj.pk)+"|"+_('GameCreated')
+        return str(gameObj.pk) + "|" + _('GameCreated')
     else:
         return _('WrongData')
 
@@ -82,27 +82,27 @@ def leaveGame(request):
         return _('CannotLeaveGameStarted')
     # If Admin, check no players
     if gameInfo.userId.id == request.user.id:
-        if gameInfo.playersPos != str(request.user.id)+',,,,':
+        if gameInfo.playersPos != str(request.user.id) + ',,,,':
             return _('CannotLeaveYouAreAdminAlreadyPlayers')
         # delete game and all gamesets for that game
         gameSetInfo = GameSet.objects.filter(gameId=request.POST.get('gameId'))
         gameSetInfo.delete()
         gameInfo.delete()
-        return "1|"+_('Left&Deleted')
+        return "1|" + _('Left&Deleted')
     gameSetInfo = GameSet.objects.filter(gameId=request.POST.get('gameId'), userId=request.user.id)
     if len(gameSetInfo) == 0:
         return _("NotInGame")
     players = ""
     for player in gameInfo.playersPos.split(","):
         if player != str(request.user.id):
-            players += player+","
+            players += player + ","
         else:
             players += ","
     gameInfo.playersPos = players[:-1]
     updateDate(request.POST.get('gameId'))
     gameInfo.save()
     gameSetInfo.delete()
-    return "1|"+_('Left')
+    return "1|" + _('Left')
 
 
 def joinGame(request):
@@ -144,10 +144,10 @@ def joinGame(request):
         playerName = playerData.nickname
     elif playerData.name is not None and playerData.name != "":
         playerName = playerData.name
-    formData = GameFlowForm({"msg": playerName+": "+_('Joined'), "gameId": gameInfo.id})
+    formData = GameFlowForm({"msg": playerName + ": " + _('Joined'), "gameId": gameInfo.id})
     formData.save()
     updateDate(gameInfo.id)
-    return "1|"+_('Joined')
+    return "1|" + _('Joined')
 
 
 def editGame(request):
@@ -159,7 +159,7 @@ def editGame(request):
     if formData.is_valid():
         formData.save()
         updateDate(request.POST.get('gameId'))
-        return "1|"+_('Edited')
+        return "1|" + _('Edited')
     else:
         return _('WrongData')
 
@@ -174,7 +174,7 @@ def deleteGame(request):
         return _('CannotDeleteHasUser')
     gameData.delete()
     updateDate(0, request.user.id)
-    return "1|"+_('Deleted')
+    return "1|" + _('Deleted')
 
 
 def startGame(request):
@@ -195,7 +195,7 @@ def startGame(request):
         gameData.started = "1"
         gameData.save()
         updateDate(request.POST.get('gameId'))
-        return "1|"+_('GameStarted')
+        return "1|" + _('GameStarted')
     return _('CannotStartOneUser')
 
 
@@ -237,15 +237,15 @@ def dealCards(request):
         # put each 13/15 card in the user current_cards
         for i in range(0, cardsNum):
             # get a randon card position from the card stack
-            rand = random.randint(0, len(cards)-1)
-            player.current_cards += cards[rand]+","
+            rand = random.randint(0, len(cards) - 1)
+            player.current_cards += cards[rand] + ","
             del cards[rand]
         player.save()
     # set the remains card to the stack
-    gameData.current_stack = ",".join(str(x) for x in cards)+","
+    gameData.current_stack = ",".join(str(x) for x in cards) + ","
     gameData.save()
     updateDate(request.POST.get('gameId'))
-    return "1|"+_('Dealt')
+    return "1|" + _('Dealt')
 
 
 def pickCard(request):
@@ -286,10 +286,10 @@ def discardCard(request):
     gameSetData = get_object_or_404(GameSet, gameId=gameId, userId=request.user.id, set=gameData.current_set)
     if gameData.moveStatus == 1:
         return _('PickCardFirst')
-    if card+"," not in gameSetData.current_cards:
+    if card + "," not in gameSetData.current_cards:
         return _('CardNotInYourGame')
     # check if pick from discarded, cannot discard same card, check there are not 2 of the same card
-    if gameData.moveStatus == 3 and gameData.picked_discard == card and len(gameSetData.current_cards.split(card+",")) == 2:
+    if gameData.moveStatus == 3 and gameData.picked_discard == card and len(gameSetData.current_cards.split(card + ",")) == 2:
         return _('CannotDiscardPickedFromDiscard')
     for player in playerPos:
         if player != '' and player == str(gameSetData.userId.id):
@@ -301,24 +301,24 @@ def discardCard(request):
     newDiscard = ''
     for discard in discardPositions:
         if i == pos:
-            newDiscard += discard+card+",|"
+            newDiscard += discard + card + ",|"
         else:
-            newDiscard += discard+"|"
+            newDiscard += discard + "|"
         i += 1
     gameData.current_discarded = newDiscard[0:-1]
     gameData.save()
     # remove card from user cards
-    gameSetData.current_cards = gameSetData.current_cards.replace(card+",", "", 1)
+    gameSetData.current_cards = gameSetData.current_cards.replace(card + ",", "", 1)
     gameData.moveStatus = 1
     gameData.picked_discard = None
     gameData.save()
     gameSetData.save()
     updateDate(gameId)
     if checkEndSet(gameSetData.current_cards, gameData):
-        return "2|"+_('GameEnded')
+        return "2|" + _('GameEnded')
     # move turn to next player
     moveTurn(gameData)
-    return "1|"+_('Descarted')
+    return "1|" + _('Descarted')
 
 
 # chage the cards order
@@ -368,7 +368,7 @@ def draw(request):
     for card in cardsCheck:
         if card not in cardsInHand:
             return _('MissingCards')
-        cardsInHand = cardsInHand.replace(card+",", "", 1)
+        cardsInHand = cardsInHand.replace(card + ",", "", 1)
     # check if set is fullDraw
     if gameSetData.fullDraw == 1 and not valFullDraw(
             len(request.POST.get('drawCards').replace('|', '').split(',')), gameData.current_set):
@@ -379,7 +379,7 @@ def draw(request):
     # remove drawn cards
     cards = request.POST.get('drawCards').replace('|', '').strip(",").split(',')
     for card in cards:
-        gameSetData.current_cards = gameSetData.current_cards.replace(card+',', '', 1)
+        gameSetData.current_cards = gameSetData.current_cards.replace(card + ',', '', 1)
     # put drawn cards in drawn user
     gameSetData.drawn = request.POST.get('drawCards')
     gameSetData.save()
@@ -387,8 +387,8 @@ def draw(request):
     gameData.save()
     updateDate(gameData.id)
     if checkEndSet(gameSetData.current_cards, gameData):
-        return "2|"+_('GameEnded')
-    return "1|"+_('Drawn')
+        return "2|" + _('GameEnded')
+    return "1|" + _('Drawn')
 
 
 # Draw one card in others game
@@ -417,7 +417,7 @@ def drawOver(request):
     drawGame = drawnGameSetData.drawn.split('|')[int(request.POST.get('drawPos'))]
     inCard = request.POST.get('in')
     # check if valid card
-    if inCard+"," not in gameSetData.current_cards:
+    if inCard + "," not in gameSetData.current_cards:
         return _('NotValidCard')
     # check if game is TOAK
     if valThreeOfAKind(drawGame.strip(",")):
@@ -436,7 +436,7 @@ def putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDa
     if inCard[0:1] == drawGame[0:1] or drawGame[0:2] == 'XX' or inCard == 'XX':
         drawnGameSetData.drawn = addToDrawn(drawnGameSetData.drawn, int(request.POST.get('drawPos')), inCard)
         drawnGameSetData.save()
-        gameSetData.current_cards = gameSetData.current_cards.replace(inCard+",", "", 1)
+        gameSetData.current_cards = gameSetData.current_cards.replace(inCard + ",", "", 1)
         gameData.moveStatus = 5
         # if drawn in own game, update own drawn
         if request.POST.get('drawUserId') == str(userId):
@@ -445,8 +445,8 @@ def putCardTOAK(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDa
         gameSetData.save()
         updateDate(gameData.id)
         if checkEndSet(gameSetData.current_cards, gameData):
-            return "2|"+_('GameEnded')
-        return "1|"+_('DrawOverMade')
+            return "2|" + _('GameEnded')
+        return "1|" + _('DrawOverMade')
 
 
 def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetData, userId):
@@ -463,7 +463,7 @@ def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDat
     drawnGameSetData.drawn = addToDrawn(drawnGameSetData.drawn, int(request.POST.get('drawPos')), inCard, pos)
     drawnGameSetData.save()
     # remove drawn card from user
-    gameSetData.current_cards = gameSetData.current_cards.replace(inCard+",", "", 1)
+    gameSetData.current_cards = gameSetData.current_cards.replace(inCard + ",", "", 1)
     gameData.moveStatus = 5
     # if drawn in own game, update own drawn
     if request.POST.get('drawUserId') == str(userId):
@@ -472,8 +472,8 @@ def putCardSTR(request, inCard, drawGame, gameData, gameSetData, drawnGameSetDat
     gameData.save()
     updateDate(gameData.id)
     if checkEndSet(gameSetData.current_cards, gameData):
-        return "2|"+_('GameEnded')
-    return "1|"+_('DrawOverMade')
+        return "2|" + _('GameEnded')
+    return "1|" + _('DrawOverMade')
 
 
 def addToDrawn(drawn, pos, card, strPos=-1):
@@ -484,12 +484,12 @@ def addToDrawn(drawn, pos, card, strPos=-1):
         if i == pos:
             if strPos == 0:
                 # put at the begining
-                newDraw += card+","+draw+"|"
+                newDraw += card + "," + draw + "|"
             else:
                 # put at the end
-                newDraw += draw+card+",|"
+                newDraw += draw + card + ",|"
         else:
-            newDraw += draw+"|"
+            newDraw += draw + "|"
         i += 1
     return newDraw[:-1]
 
@@ -504,21 +504,21 @@ def pickFromStack(gameData, gameSetData, start="0"):
         random.shuffle(cards)
         random.shuffle(cards)
         auxLeftCard = gameData.current_stack
-        gameData.current_stack = ",".join(str(x) for x in cards)+","+auxLeftCard
+        gameData.current_stack = ",".join(str(x) for x in cards) + "," + auxLeftCard
         gameData.current_discarded = ''
         gameData.save()
     card = gameData.current_stack[-3:-1]
     gameData.current_stack = gameData.current_stack[0:-3]
     if start == "1":
         auxC = gameSetData.current_cards
-        gameSetData.current_cards = card+","+auxC
+        gameSetData.current_cards = card + "," + auxC
     else:
-        gameSetData.current_cards += card+","
+        gameSetData.current_cards += card + ","
     gameData.moveStatus = 2
     gameData.save()
     gameSetData.save()
     updateDate(gameData.id)
-    return "1|"+card
+    return "1|" + card
 
 
 # get next card from discarded position
@@ -550,24 +550,24 @@ def pickFromDiscarded(gameData, gameSetData, start="0"):
     for discard in discardPositions:
         if i == pos:
             card = discard[-3:-1]
-            newDiscard += discard[0:-3]+"|"
+            newDiscard += discard[0:-3] + "|"
         else:
-            newDiscard += discard+"|"
+            newDiscard += discard + "|"
         i += 1
     if card == '':
         return _('NoCardsInDiscard')
     gameData.current_discarded = newDiscard[0:-1]
     if start == "1":
         auxC = gameSetData.current_cards
-        gameSetData.current_cards = card+","+auxC
+        gameSetData.current_cards = card + "," + auxC
     else:
-        gameSetData.current_cards += card+","
+        gameSetData.current_cards += card + ","
     gameData.moveStatus = 3
     gameData.picked_discard = card
     gameData.save()
     gameSetData.save()
     updateDate(gameData.id)
-    return "1|"+card
+    return "1|" + card
 
 
 def canPlay(gameData, userId):
@@ -581,9 +581,9 @@ def canPlay(gameData, userId):
 
 def moveTurn(gameData):
     playerPos = gameData.playersPos.split(",")
-    pos = gameData.currentPlayerPos+1
+    pos = gameData.currentPlayerPos + 1
     i = 0
-    for i in range(gameData.currentPlayerPos+1, len(playerPos)):
+    for i in range(gameData.currentPlayerPos + 1, len(playerPos)):
         if str(playerPos[i]) != "":
             break
     pos = i
@@ -615,7 +615,7 @@ def checkEndSet(cards, gameData):
         gameSetData = get_list_or_404(GameSet, gameId=gameData.id, set=1)
         # add new set to all players, check if next set is fullDraw
         for gameSet in gameSetData:
-            gpObj = GameSetForm({'set': gameData.current_set, 'fullDraw': gameData.fullDraw[gameData.current_set-1:gameData.current_set] == "1",
+            gpObj = GameSetForm({'set': gameData.current_set, 'fullDraw': gameData.fullDraw[gameData.current_set - 1:gameData.current_set] == "1",
                                 "points": 0, "userId": gameSet.userId.id, "gameId": gameData.id, "current_cards": ""})
             gpObj.save()
         # get players and set who start next round
@@ -656,11 +656,11 @@ def checkAppenStrCard(drawGameCards, inCard):
     # make Leters numeric
     cardN = letterToNumber(inCard[0:1])
     cardH = letterToNumber(drawGameCards[0][0:1])
-    cardE = letterToNumber(drawGameCards[len(drawGameCards)-1][0:1])
+    cardE = letterToNumber(drawGameCards[len(drawGameCards) - 1][0:1])
     pos = -1
-    if (cardN == cardH-1) or (cardH == 1 and cardN == 13):
+    if (cardN == cardH - 1) or (cardH == 1 and cardN == 13):
         pos = 0
-    elif (cardN == cardE+1) or (cardE == 13 and cardN == 1):
+    elif (cardN == cardE + 1) or (cardE == 13 and cardN == 1):
         pos = 1
     return pos
 
@@ -751,7 +751,7 @@ def valStraight(cards):
     for i in range(1, len(cardList)):
         if cardList[i] == 'XX':
             # if joker, don't validate and set the spected value to the previous card
-            prevCard = numberToLetter(letterToNumber(prevCard[0:1])+1)+prevCard[1:2]
+            prevCard = numberToLetter(letterToNumber(prevCard[0:1]) + 1) + prevCard[1:2]
             prevCardN = letterToNumber(prevCard[0:1])
             continue
         cc = letterToNumber(cardList[i][0:1])
@@ -760,7 +760,7 @@ def valStraight(cards):
             return False
         if prevCardN == 13:
             prevCardN = 0
-        if cc != prevCardN+1:
+        if cc != prevCardN + 1:
             return False
         prevCard = cardList[i]
         prevCardN = letterToNumber(cardList[i][0:1])
@@ -782,51 +782,51 @@ def replaceAllJokers(cardList):
     # replace any other joker
     while i < len(cardList):
         if cardList[i] == "XX":
-            cardList[i] = replaceJokerFromPrevious(cardList[i-1])
+            cardList[i] = replaceJokerFromPrevious(cardList[i - 1])
         i += 1
     # append jokers again if any
     for i in range(0, jokersRemoved):
         cardList.insert(0, "XX")
     # find values for any initial joker
-    i = jokersRemoved-1
+    i = jokersRemoved - 1
     while i >= 0:
-        cardList[i] = replaceJokerFromNext(cardList[i+1])
+        cardList[i] = replaceJokerFromNext(cardList[i + 1])
         i -= 1
     return cardList
 
 
 def replaceJokerFromPrevious(card):
     if card[0:1] in '2345678':
-        return str(int(card[0:1])+1)+card[1:2]
+        return str(int(card[0:1]) + 1) + card[1:2]
     if card[0:1] == '9':
-        return "0"+card[1:2]
+        return "0" + card[1:2]
     if card[0:1] == '0':
-        return "J"+card[1:2]
+        return "J" + card[1:2]
     if card[0:1] == 'J':
-        return "Q"+card[1:2]
+        return "Q" + card[1:2]
     if card[0:1] == 'Q':
-        return "K"+card[1:2]
+        return "K" + card[1:2]
     if card[0:1] == 'K':
-        return "A"+card[1:2]
+        return "A" + card[1:2]
     if card[0:1] == 'A':
-        return "2"+card[1:2]
+        return "2" + card[1:2]
 
 
 def replaceJokerFromNext(card):
     if card[0:1] in '3456789':
-        return str(int(card[0:1])-1)+card[1:2]
+        return str(int(card[0:1]) - 1) + card[1:2]
     if card[0:1] == '0':
-        return "9"+card[1:2]
+        return "9" + card[1:2]
     if card[0:1] == 'J':
-        return "0"+card[1:2]
+        return "0" + card[1:2]
     if card[0:1] == 'Q':
-        return "J"+card[1:2]
+        return "J" + card[1:2]
     if card[0:1] == 'K':
-        return "Q"+card[1:2]
+        return "Q" + card[1:2]
     if card[0:1] == 'A':
-        return "K"+card[1:2]
+        return "K" + card[1:2]
     if card[0:1] == '2':
-        return "A"+card[1:2]
+        return "A" + card[1:2]
 
 
 def removeInitialJokers(cardList):
@@ -898,10 +898,10 @@ def updateDate(gameId=0, userId=0):
     if gameId != 0:
         for player in get_list_or_404(GameSet, gameId=gameId, set=1):
             p = get_object_or_404(Player, userId=player.userId.id)
-            p.update_date = datetime.datetime.now()-datetime.timedelta(hours=5)
+            p.update_date = datetime.datetime.now() - datetime.timedelta(hours=5)
             p.save()
     # Update one player
     else:
         p = get_object_or_404(Player, userId=userId)
-        p.update_date = datetime.datetime.now()-datetime.timedelta(hours=5)
+        p.update_date = datetime.datetime.now() - datetime.timedelta(hours=5)
         p.save()

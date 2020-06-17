@@ -5,13 +5,13 @@ def sendPin(request, mail=False):
     import random
     from django.utils.translation import gettext as _
     pin = random.randint(10000, 99999)
-    logger('tmp', "PIN:"+str(pin))
+    logger('tmp', "PIN:" + str(pin))
     from cryptography.fernet import Fernet
-    data = Fernet('RlHONeOuUGIzxLrCRzvCf3RMNxuNIyVATrBRpX5cEAU=').encrypt(str.encode(request.session.get('user_email', '')+"&"+request.session.get('user_pass', '')))
-    msg = _("PinMessage").replace('%(pin)', str(pin)).replace('%(url)', 'http://'+request.META['HTTP_HOST']+'/?q='+data.decode("utf-8"))
+    data = Fernet('RlHONeOuUGIzxLrCRzvCf3RMNxuNIyVATrBRpX5cEAU=').encrypt(str.encode(request.session.get('user_email', '') + "&" + request.session.get('user_pass', '')))
+    msg = _("PinMessage").replace('%(pin)', str(pin)).replace('%(url)', 'http://' + request.META['HTTP_HOST'] + '/?q=' + data.decode("utf-8"))
     request.session['userpin'] = str(pin)
     email = request.POST.get('email', False)
-    sendMail([email], _('PinSubject'), msg+" "+str(pin))
+    sendMail([email], _('PinSubject'), msg + " " + str(pin))
 
 
 def sendMail(dest, subject, body, fromEmail=(settings.FROMEMAIL)):
@@ -24,14 +24,14 @@ def sendMail(dest, subject, body, fromEmail=(settings.FROMEMAIL)):
 def logger(file, message):
     import datetime
     import pytz
-    handle1 = open(settings.BASE_DIR+'/rummiApp/logs/'+file+'_'+pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%Y-%m-%d")+'.log', 'a')
-    handle1.write(pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%H:%M:%S")+"|"+message+"\n")
+    handle1 = open(settings.BASE_DIR + '/rummiApp/logs/' + file + '_' + pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%Y-%m-%d") + '.log', 'a')
+    handle1.write(pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%H:%M:%S") + "|" + message + "\n")
     handle1.close()
 
 
 def runnig(oper, daemon, delF=False):
     import os
-    path = settings.LOCKFILEPATH+".rummi" + oper + "_" + str(daemon)
+    path = settings.LOCKFILEPATH + ".rummi" + oper + "_" + str(daemon)
     if delF:
         os.remove(path)
     elif os.path.exists(path):
@@ -64,7 +64,7 @@ def fileUpload(request, pk, field):
         else:
             fs = FileSystemStorage()
             deleteFile(request, pk, field)
-            fs.save(os.path.join(settings.BASE_DIR, 'static/'+path+str(pk)+file_extension), file)
+            fs.save(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + file_extension), file)
 
 
 def deleteFile(request, pk, field):
@@ -78,5 +78,5 @@ def deleteFile(request, pk, field):
         return
     import os
     for ext in {'.png', '.jpg', '.jpeg', '.gif'}:
-        if os.path.exists(os.path.join(settings.BASE_DIR, 'static/'+path+str(pk)+ext)):
-            os.remove(os.path.join(settings.BASE_DIR, 'static/'+path+str(pk)+ext))
+        if os.path.exists(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + ext)):
+            os.remove(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + ext))

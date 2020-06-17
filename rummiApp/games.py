@@ -215,6 +215,8 @@ def dealCards(request):
     ]
     # Deal stack
     random.shuffle(cards)
+    random.shuffle(cards)
+    random.shuffle(cards)
     from django.shortcuts import get_object_or_404, get_list_or_404
     from .models import Game, GameSet
     gameId = request.POST.get("gameId")
@@ -257,11 +259,11 @@ def pickCard(request):
     if gameData.moveStatus != 1:
         return _('AlreadyPick')
     if request.POST.get("stack") == '1':
-        return pickFromStack(gameData, gameSetData)
+        return pickFromStack(gameData, gameSetData, request.POST.get('start'))
     if request.POST.get("discard") == '1':
         if gameSetData.drawn != '':
             return _('CannotPickFromDiscardAlreadyDrawn')
-        return pickFromDiscarded(gameData, gameSetData)
+        return pickFromDiscarded(gameData, gameSetData, request.POST.get('start'))
     else:
         return _('GeneralError')
 
@@ -321,24 +323,21 @@ def discardCard(request):
 
 # chage the cards order
 def cardsOrder(request):
+    cards = request.POST.get('cards', "").replace(",,", ",")
     from .models import Game, GameSet
     from django.shortcuts import get_object_or_404
     gameId = request.POST.get('gameId')
-    cards = request.POST.get('cards', "").strip(",").split(",")
     gameData = get_object_or_404(Game, pk=gameId)
     gameSetData = get_object_or_404(GameSet, gameId=gameId,
                                     userId=request.user.id, set=gameData.current_set)
-    currentCards = gameSetData.current_cards.strip(",").split(",")
+    currentCards = gameSetData.current_cards.split(",")
     currentCards.sort()
-    # check if same number of cards
-    if len(cards) != len(currentCards):
-        return _('WrongCards')
     # order arrays to check if same cards
-    cardsS = request.POST.get('cards', "").strip(",").split(",")
+    cardsS = request.POST.get('cards', "").split(",")
     cardsS.sort()
     if cardsS != currentCards:
         return _('WrongCards')
-    gameSetData.current_cards = request.POST.get('cards', "")
+    gameSetData.current_cards = cards
     gameSetData.save()
     updateDate(0, request.user.id)
     return '1'
@@ -496,19 +495,25 @@ def addToDrawn(drawn, pos, card, strPos=-1):
 
 
 # get next card from stack
-def pickFromStack(gameData, gameSetData):
-    if gameData.current_stack == '':
+def pickFromStack(gameData, gameSetData, start="0"):
+    if len(gameData.current_stack) == 3:
         # re deal stack
         cards = gameData.current_discarded.replace("|", "").strip(",").split(",")
         import random
         random.shuffle(cards)
-        gameData.current_stack = ",".join(str(x) for x in cards)+","
+        random.shuffle(cards)
+        random.shuffle(cards)
+        auxLeftCard = gameData.current_stack
+        gameData.current_stack = ",".join(str(x) for x in cards)+","+auxLeftCard
         gameData.current_discarded = ''
         gameData.save()
     card = gameData.current_stack[-3:-1]
     gameData.current_stack = gameData.current_stack[0:-3]
-    gameData.save()
-    gameSetData.current_cards += card+","
+    if start == "1":
+        auxC = gameSetData.current_cards
+        gameSetData.current_cards = card+","+auxC
+    else:
+        gameSetData.current_cards += card+","
     gameData.moveStatus = 2
     gameData.save()
     gameSetData.save()
@@ -517,7 +522,7 @@ def pickFromStack(gameData, gameSetData):
 
 
 # get next card from discarded position
-def pickFromDiscarded(gameData, gameSetData):
+def pickFromDiscarded(gameData, gameSetData, start="0"):
     # find user discard position
     playerPos = gameData.playersPos.split(",")
     pos = -1
@@ -552,8 +557,11 @@ def pickFromDiscarded(gameData, gameSetData):
     if card == '':
         return _('NoCardsInDiscard')
     gameData.current_discarded = newDiscard[0:-1]
-    gameData.save()
-    gameSetData.current_cards += card+","
+    if start == "1":
+        auxC = gameSetData.current_cards
+        gameSetData.current_cards = card+","+auxC
+    else:
+        gameSetData.current_cards += card+","
     gameData.moveStatus = 3
     gameData.picked_discard = card
     gameData.save()
@@ -729,7 +737,7 @@ def valSet(set, drawCards):
 
 # check if cards are an straight
 def valStraight(cards):
-    cardList = cards.split(',')
+    cardList = replaceAllJokers(cards.strip(",").split(','))
     if len(cardList) < 4:
         return False
     # remove all initials joker

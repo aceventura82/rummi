@@ -273,7 +273,7 @@ def editPlayer(request, admin=False):
         request.session['msg'] += _('PlayerUpdated')
         request.session['username'] = playerData.nickname
     else:
-        request.session['msg'] = _('DataError')+str(formData)
+        request.session['msg'] = _('DataError')
 
 
 def getUserHash(username):

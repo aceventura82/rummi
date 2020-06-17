@@ -31,10 +31,13 @@ def checkMsg(request, context):
 @csrf_exempt
 def testing(request):
     from django.http import HttpResponse
-    # from django.shortcuts import get_object_or_404
-    # from .models import Game
-    from .games import checkAppenStrCard
-    return HttpResponse(checkAppenStrCard("XX,5D,6D,7D,".strip(",").split(','), '9D'))
+    from .games import viewMyGames
+    data = viewMyGames(request.POST.get("userId"))
+    result = ""
+    for dato in data:
+        if ","+str(dato.gameId.id)+"," not in request.POST.get("ignore", ""):
+            result += APIViews.dataToJSON([dato.gameId])
+    return HttpResponse(result)
 
 
 def joinGame(request, code):
@@ -140,6 +143,11 @@ class APIViews():
         else:
             return HttpResponse(context['msg'])
 
+    def errors(request):
+        from django.http import HttpResponse
+        logger("users_errors", str(request.POST.get("data")))
+        HttpResponse("OK")
+
     def valApiKey(key, user=""):
         return True
         from .players import getUserHash
@@ -167,7 +175,7 @@ class APIViews():
         try:
             from django.http import HttpResponse
             oper = request.POST.get('oper', '')
-            publicAccess = "login,register"
+            publicAccess = "login,register,errors"
             # Set Language
             APIViews.lang(request)
             # check API Key for Non public Opers
@@ -308,7 +316,8 @@ class APIViews():
         data = viewMyGames(request.user.id)
         result = ""
         for dato in data:
-            result += APIViews.dataToJSON([dato.gameId])
+            if ","+str(dato.gameId.id)+"," not in request.POST.get("ignore", ""):
+                result += APIViews.dataToJSON([dato.gameId])
         return result
 
     @login_required

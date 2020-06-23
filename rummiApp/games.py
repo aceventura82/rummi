@@ -29,11 +29,16 @@ def viewMyGames(userId):
 def myTurn(userId):
     from .models import GameSet
     from django.shortcuts import get_list_or_404
+    from django.http import Http404
+    from django.db.models import Q
     games = ""
-    for game in get_list_or_404(GameSet, userId=userId, set=1):
-        playerPos = game.gameId.playersPos.split(",")
-        if str(playerPos[game.gameId.currentPlayerPos]) == str(userId):
-            games += str(game.gameId.id) + ","
+    try:
+        for game in get_list_or_404(GameSet, ~Q(gameId__started=2), userId=userId, set=1):
+            playerPos = game.gameId.playersPos.split(",")
+            if str(playerPos[game.gameId.currentPlayerPos]) == str(userId):
+                games += str(game.gameId.id) + ","
+    except Http404:
+        return ""
     if games == "":
         return ""
     return games[:-1]
@@ -66,7 +71,7 @@ def addGame(request):
             playerName = playerData.nickname
         elif playerData.name is not None and playerData.name != "":
             playerName = playerData.name
-        formData = GameFlowForm({"msg": playerName + ": " + _('CreatedGame'), "gameId": gameObj.pk})
+        formData = GameFlowForm({"msg": playerName + "||--||10||--||", "gameId": gameObj.pk})
         formData.save()
         updateDate(0, request.user.id)
         return str(gameObj.pk) + "|" + _('GameCreated')
@@ -144,7 +149,7 @@ def joinGame(request):
         playerName = playerData.nickname
     elif playerData.name is not None and playerData.name != "":
         playerName = playerData.name
-    formData = GameFlowForm({"msg": playerName + ": " + _('Joined'), "gameId": gameInfo.id})
+    formData = GameFlowForm({"msg": playerName + "||--||11||--||", "gameId": gameInfo.id})
     formData.save()
     updateDate(gameInfo.id)
     return "1|" + _('Joined')
@@ -505,7 +510,7 @@ def pickFromStack(gameData, gameSetData, start="0"):
         random.shuffle(cards)
         auxLeftCard = gameData.current_stack
         gameData.current_stack = ",".join(str(x) for x in cards) + "," + auxLeftCard
-        gameData.current_discarded = ''
+        gameData.current_discarded = '||||'
         gameData.save()
     card = gameData.current_stack[-3:-1]
     gameData.current_stack = gameData.current_stack[0:-3]

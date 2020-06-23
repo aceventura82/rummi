@@ -1,4 +1,5 @@
 notes
 **/__pycache__/
 rummiApp/logs/
-.vscode
+.remote-sync.json
+.gitignore

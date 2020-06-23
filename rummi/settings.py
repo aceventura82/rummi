@@ -161,7 +161,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR+'/rummiApp/logs/debug.log',
+            'filename': BASE_DIR + '/rummiApp/logs/debug.log',
         },
     },
     'loggers': {
@@ -195,7 +195,7 @@ USE_TZ = True
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 
 LOCALE_PATHS = [
-    BASE_DIR+'/locale/',
+    BASE_DIR + '/locale/',
 ]
 TRANSLATIONS_BASE_DIR = ''
 TRANSLATIONS_PROJECT_BASE_DIR = BASE_DIR
@@ -219,8 +219,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/'
 ADMIN_URL = 'AdminRummi/'
-LOGIN_REDIRECT_URL = '/'+ADMIN_URL
+LOGIN_REDIRECT_URL = '/' + ADMIN_URL
 LANGUAGES = (('en', 'English'), ('es', 'Español'))
 LOGPATH = BASE_DIR + 'rummiApp/logs/'
 
 AUTH_PASSWORD_VALIDATORS = []
+# an unique key for production, same as Android PP
+APIKEY = 'b&w?2jjpiQN4qKiQoazOOdoH_iVQ0HKvXY_Q9hkJ5GRA8a?LZbFgG_va2/X7/Xt_'

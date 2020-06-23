@@ -151,6 +151,7 @@ class APIViews():
     def valApiKey(key, user=""):
         return True
         from .players import getUserHash
+        from django.conf import settings
         import hmac
         import hashlib
         import datetime
@@ -158,7 +159,7 @@ class APIViews():
         append = ""
         if user != "":
             append = getUserHash(user)
-        salt = bytes('b&w?2jjpiQN4qKiQoazOOdoH_iVQ0HKvXY_Q9hkJ5GRA8a?LZbFgG_va2/X7/Xt_', 'utf-8')
+        salt = bytes(settings.APIKEY, 'utf-8')
         t1 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() - datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M") + append
         t2 = pytz.timezone('America/Bogota').localize(datetime.datetime.now()).strftime("%Y%m%d%H%M") + append
         t3 = pytz.timezone('America/Bogota').localize(datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime("%Y%m%d%H%M") + append

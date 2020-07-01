@@ -252,6 +252,11 @@ class APIViews():
         return editGame(request)
 
     @login_required
+    def hideGame(request):
+        from .games import hideGame
+        return hideGame(request)
+
+    @login_required
     def startGame(request):
         from .games import startGame
         return startGame(request)
@@ -317,8 +322,7 @@ class APIViews():
         data = viewMyGames(request.user.id)
         result = ""
         for dato in data:
-            if "," + str(dato.gameId.id) + "," not in request.POST.get("ignore", ""):
-                result += APIViews.dataToJSON([dato.gameId])
+            result += APIViews.dataToJSON([dato.gameId])
         return result
 
     @login_required

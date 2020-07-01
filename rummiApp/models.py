@@ -64,6 +64,7 @@ class GameSet(models.Model):
     gameId = models.ForeignKey(Game, on_delete=models.CASCADE)
     current_cards = models.CharField(max_length=500, default='')
     drawn = models.CharField(max_length=100, default='')
+    hidden = models.CharField(max_length=1, default='')
 
     class Meta:
         unique_together = ('userId', 'gameId', 'set')

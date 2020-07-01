@@ -23,7 +23,7 @@ def viewGameCode(code):
 def viewMyGames(userId):
     from .models import GameSet
     from django.shortcuts import get_list_or_404
-    return get_list_or_404(GameSet.objects.order_by("gameId__started", "-gameId__date"), userId=userId, set=1)[:50]
+    return get_list_or_404(GameSet.objects.order_by("gameId__started", "-gameId__date"), userId=userId, set=1, hidden='')[:50]
 
 
 def myTurn(userId):
@@ -167,6 +167,20 @@ def editGame(request):
         return "1|" + _('Edited')
     else:
         return _('WrongData')
+
+
+def hideGame(request):
+    from .models import GameSet
+    from django.shortcuts import get_object_or_404
+    from django.http import Http404
+    gameId = request.POST.get('gameId')
+    try:
+        gameData = get_object_or_404(GameSet, gameId=gameId, set=1, userId=request.user.id, gameId__started="2")
+    except Http404:
+        return _('NotFound')
+    gameData.hidden = '1'
+    gameData.save()
+    return "1|" + _('Deleted')
 
 
 # Delete game

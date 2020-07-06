@@ -3,3 +3,4 @@ notes
 rummiApp/logs/
 .remote-sync.json
 .gitignore
+/rummi/settings.py

@@ -501,7 +501,7 @@ def addToDrawn(drawn, pos, card, strPos=-1):
     newDraw = ''
     for draw in drawPos:
         if i == pos:
-            if strPos == 0:
+            if strPos == '0':
                 # put at the begining
                 newDraw += card + "," + draw + "|"
             else:
@@ -678,9 +678,9 @@ def checkAppenStrCard(drawGameCards, inCard):
     cardE = letterToNumber(drawGameCards[len(drawGameCards) - 1][0:1])
     pos = -1
     if (cardN == cardH - 1) or (cardH == 1 and cardN == 13):
-        pos = 0
+        pos = '0'
     elif (cardN == cardE + 1) or (cardE == 13 and cardN == 1):
-        pos = 1
+        pos = '1'
     return pos
 
 

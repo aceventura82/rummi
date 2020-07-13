@@ -44,3 +44,9 @@ def addToFlow(request):
     formData = GameFlowForm(request.POST)
     if formData.is_valid():
         formData.save()
+
+
+def addAudio(request):
+    from .services import fileUpload
+    addMessage(request)
+    fileUpload(request, request.POST.get("file"), 'audio')

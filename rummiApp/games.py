@@ -233,9 +233,8 @@ def dealCards(request):
         'AC', '2C', '3C', '4C', '5C', '6C', '7C', '8C', '9C', '0C', 'JC', 'QC', 'KC'
     ]
     # Deal stack
-    random.shuffle(cards)
-    random.shuffle(cards)
-    random.shuffle(cards)
+    for i in range(0.20):
+        random.shuffle(cards)
     from django.shortcuts import get_object_or_404, get_list_or_404
     from .models import Game, GameSet
     gameId = request.POST.get("gameId")
@@ -340,23 +339,22 @@ def discardCard(request):
     return "1|" + _('Descarted')
 
 
-# chage the cards order
+# change the cards order
 def cardsOrder(request):
-    cards = request.POST.get('cards', "").replace(",,", ",")
     from .models import Game, GameSet
     from django.shortcuts import get_object_or_404
     gameId = request.POST.get('gameId')
     gameData = get_object_or_404(Game, pk=gameId)
     gameSetData = get_object_or_404(GameSet, gameId=gameId,
                                     userId=request.user.id, set=gameData.current_set)
+    # order arrays to check if same cards
+    cards = request.POST.get('cards', "").split(",")
+    cards.sort()
     currentCards = gameSetData.current_cards.split(",")
     currentCards.sort()
-    # order arrays to check if same cards
-    cardsS = request.POST.get('cards', "").split(",")
-    cardsS.sort()
-    if cardsS != currentCards:
+    if cards != currentCards:
         return _('WrongCards')
-    gameSetData.current_cards = cards
+    gameSetData.current_cards = request.POST.get('cards', "")
     gameSetData.save()
     updateDate(0, request.user.id)
     return '1'

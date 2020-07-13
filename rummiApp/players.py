@@ -234,6 +234,37 @@ def changePass(request):
     request.session['msg'] = _('PasswordChanged')
 
 
+def sendEmailPass(request):
+    userN = request.POST.get('usernameUser', False)
+    user = User.objects.filter(username=userN)
+    if user[0]:
+        userObj = findPlayerUserId(user[0].id)
+        if user[0].is_staff:
+            return _('AuthenticationFailed')
+        elif userObj.status != '1':
+            return _('UserDeactivated')
+    else:
+        return _('UserNotFound')
+    from .services import sendMail
+    sendMail([user[0].email], _('PasswordReset'), _('PasswordResetBody').replace('%%CODE%%', user[0].password[0:6]))
+    return _('CodeSent')
+
+
+def updPasswordCode(request):
+    userN = request.POST.get('usernameUser', False)
+    user = User.objects.filter(username=userN)
+    if user[0] and user[0].password[0:6] == request.POST.get("code"):
+        if request.POST.get('new_password1', "") != request.POST.get('new_password2', ""):
+            return _('DiffPass')
+        if len(request.POST.get('new_password1', "")) < 6 or all(c.isalpha() == request.POST.get('new_password1', "").isalpha() for c in request.POST.get('new_password1', "")):
+            return _('NotValidPass') + str(str(request.POST.get('new_password1', "")).isalpha())
+        user[0].set_password(request.POST.get('new_password1', ""))
+        user[0].save()
+        return _('PasswordChanged')
+    else:
+        return _('WrongCode')
+
+
 def editPlayer(request, admin=False):
     from .models import Player, PlayerForm
     if admin:

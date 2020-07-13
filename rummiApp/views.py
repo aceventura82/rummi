@@ -176,7 +176,7 @@ class APIViews():
         try:
             from django.http import HttpResponse
             oper = request.POST.get('oper', '')
-            publicAccess = "login,register,errors"
+            publicAccess = "login,register,errors,checkVersion,sendEmailPass,updPasswordCode"
             # Set Language
             APIViews.lang(request)
             # check API Key for Non public Opers
@@ -192,13 +192,24 @@ class APIViews():
                 # check User Still Exist and Active
                 try:
                     user.id
-                except Exception:
-                    return HttpResponse('--')
+                except Exception as ex:
+                    return HttpResponse('--'+str(ex))
             # get data
             return HttpResponse(getattr(APIViews, oper)(request))
         except Exception as ex:
-            logger("errors", str(ex))
-            return HttpResponse('--')
+            return HttpResponse('--'+str(ex))
+
+    def checkVersion(request):
+        from django.http import HttpResponse
+        version = request.POST.get("version", "")
+        f = open(settings.BASE_DIR + '/rummiApp/logs/version.log', 'r')
+        curVer = float(f.read().rstrip())
+        if version != "" and float(version) > curVer:
+            w = open(settings.BASE_DIR + '/rummiApp/logs/version.log', 'w')
+            w.write(version)
+        elif version != "" and float(version) < curVer:
+            return HttpResponse(str(curVer))
+        return HttpResponse("OK")
 
     def bundleData(request):
         from .models import Player
@@ -346,7 +357,10 @@ class APIViews():
                 name = playerData.nickname
             elif playerData.name is not None and playerData.name != "":
                 name = playerData.name
-            result = result[:-2] + ',"name":"' + name + '"}\n'
+            ext = ''
+            if playerData.extension is not None:
+                ext = playerData.extension
+            result = result[:-2] + ',"name":"' + name + '", "extension":"'+ext+'"}\n'
         return result
 
     @login_required
@@ -371,6 +385,20 @@ class APIViews():
             return 'OK|' + _('PasswordChanged')
         return request.session.get('msg')
 
+    def sendEmailPass(request):
+        from .players import sendEmailPass
+        res = sendEmailPass(request)
+        if res == _('CodeSent'):
+            return 'OK|' + res
+        return res
+
+    def updPasswordCode(request):
+        from .players import updPasswordCode
+        res = updPasswordCode(request)
+        if res == _('PasswordChanged'):
+            return 'OK|' + res
+        return res
+
     @login_required
     def getMessages(request):
         from .messages import getMessages
@@ -392,3 +420,9 @@ class APIViews():
         from .messages import addToFlow
         addToFlow(request)
         return ''
+
+    @login_required
+    def addAudio(request):
+        from .messages import addAudio
+        addAudio(request)
+        return request.session.get('msg')

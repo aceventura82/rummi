@@ -1,0 +1,326 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-11 14:06-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: rummiApp/games.py:64 rummiApp/games.py:287
+msgid "GeneralError"
+msgstr "Error General"
+
+#: rummiApp/games.py:77
+msgid "GameCreated"
+msgstr "Juego Creado"
+
+#: rummiApp/games.py:79 rummiApp/games.py:169
+msgid "WrongData"
+msgstr "Datos incorrectos"
+
+#: rummiApp/games.py:87
+msgid "CannotLeaveGameStarted"
+msgstr "No se puede eliminar el juego, ya ha iniciado"
+
+#: rummiApp/games.py:91
+msgid "CannotLeaveYouAreAdminAlreadyPlayers"
+msgstr "No se puede eliminar el juego, Ya hay jugadores registrados"
+
+#: rummiApp/games.py:96
+msgid "Left&Deleted"
+msgstr "Eliminado"
+
+#: rummiApp/games.py:99
+msgid "NotInGame"
+msgstr "No estas registrado en este juego"
+
+#: rummiApp/games.py:110
+msgid "Left"
+msgstr "Eliminado"
+
+#: rummiApp/games.py:119
+msgid "WronPlace"
+msgstr "Posicion incorrecta"
+
+#: rummiApp/games.py:123
+msgid "GameHasStarted"
+msgstr "Juego ya inició"
+
+#: rummiApp/games.py:125 rummiApp/games.py:207
+msgid "GameHasEnded"
+msgstr "Juego ha terminado"
+
+#: rummiApp/games.py:128
+msgid "AlreadyInGame"
+msgstr "Ya estas registrado en este juego"
+
+#: rummiApp/games.py:134
+msgid "PlaceNotAvailable"
+msgstr "Posición no disponible"
+
+#: rummiApp/games.py:136
+msgid "TableFull"
+msgstr "Mesa Llena"
+
+#: rummiApp/games.py:155
+msgid "Joined"
+msgstr "Te has unido al juego"
+
+#: rummiApp/games.py:167
+msgid "Edited"
+msgstr "Modificado"
+
+#: rummiApp/games.py:180
+msgid "NotFound"
+msgstr "No encontrado"
+
+#: rummiApp/games.py:183 rummiApp/games.py:196
+msgid "Deleted"
+msgstr "Eliminado"
+
+#: rummiApp/games.py:193
+msgid "CannotDeleteHasUser"
+msgstr "No se puede iliminar, ya tiene jugadores"
+
+#: rummiApp/games.py:205
+msgid "GameAlreadyStarted"
+msgstr "Juego ya inició"
+
+#: rummiApp/games.py:217
+msgid "GameStarted"
+msgstr "Juego Iniciado"
+
+#: rummiApp/games.py:218
+msgid "CannotStartOneUser"
+msgstr "No puedes iniciar, solo hay un jugador"
+
+#: rummiApp/games.py:245
+msgid "YouAreNotDealingThisGame"
+msgstr "No es tu turno para repartir"
+
+#: rummiApp/games.py:247
+msgid "AlreadyDealt"
+msgstr "Ya repartiste las cartas"
+
+#: rummiApp/games.py:267
+msgid "Dealt"
+msgstr "Repartido"
+
+#: rummiApp/games.py:277 rummiApp/games.py:296 rummiApp/games.py:373
+#: rummiApp/games.py:422
+msgid "NotYourTurn"
+msgstr "No es tu turno"
+
+#: rummiApp/games.py:279
+msgid "AlreadyPick"
+msgstr "Ya tomaste carta"
+
+#: rummiApp/games.py:284
+msgid "CannotPickFromDiscardAlreadyDrawn"
+msgstr "No puedes tomar carta del descarte, ya bajaste juego"
+
+#: rummiApp/games.py:298
+msgid "PickCardToDiscard"
+msgstr "Elige una carta para descartar"
+
+#: rummiApp/games.py:301
+msgid "CannotDiscardJoker"
+msgstr "El Comodin no se puede descartar"
+
+#: rummiApp/games.py:307 rummiApp/games.py:380
+msgid "PickCardFirst"
+msgstr "Primero escoje una carta"
+
+#: rummiApp/games.py:309
+msgid "CardNotInYourGame"
+msgstr "Carta no esta en tu juego"
+
+#: rummiApp/games.py:312
+msgid "CannotDiscardPickedFromDiscard"
+msgstr "No puedes descartar la misma carta que tomaste del descarte"
+
+#: rummiApp/games.py:337 rummiApp/games.py:408 rummiApp/games.py:466
+#: rummiApp/games.py:493
+msgid "GameEnded"
+msgstr "Juego Terminado"
+
+#: rummiApp/games.py:340
+msgid "Descarted"
+msgstr "Descartado"
+
+#: rummiApp/games.py:357
+msgid "WrongCards"
+msgstr "Cartas incorrectas"
+
+#: rummiApp/games.py:378 rummiApp/games.py:382
+msgid "AlreadyDrawn"
+msgstr "Ya bajaste el juego"
+
+#: rummiApp/games.py:388
+msgid "MissingCards"
+msgstr "Faltan cartas"
+
+#: rummiApp/games.py:393
+msgid "GameIsFullDraw"
+msgstr "El Juego se debe bajar completo"
+
+#: rummiApp/games.py:396
+msgid "GameNotValid"
+msgstr "Juego no valido"
+
+#: rummiApp/games.py:409
+msgid "Drawn"
+msgstr "Juego bajado"
+
+#: rummiApp/games.py:427
+msgid "YoCannoDrawOverYet"
+msgstr "No puedes poner carta aun"
+
+#: rummiApp/games.py:429
+msgid "NoGameToDrawIn"
+msgstr "Juego no encontrado"
+
+#: rummiApp/games.py:431
+msgid "NoDrawOverOnDraw"
+msgstr "No puedes poner carta si te acabas de bajar"
+
+#: rummiApp/games.py:433
+msgid "JustCanOneDrawOver"
+msgstr "Solo puedes bajar una carta"
+
+#: rummiApp/games.py:439
+msgid "NotValidCard"
+msgstr "Carta no valida"
+
+#: rummiApp/games.py:446 rummiApp/games.py:479
+msgid "NotValidDrawOver"
+msgstr "Carta no Valida"
+
+#: rummiApp/games.py:467 rummiApp/games.py:494
+msgid "DrawOverMade"
+msgstr "Carta bajada"
+
+#: rummiApp/games.py:477
+msgid "NotValidPosJoker"
+msgstr "Posicion no valida"
+
+#: rummiApp/games.py:576
+msgid "NoCardsInDiscard"
+msgstr "No hay cartas para tomar del descarte"
+
+#: rummiApp/players.py:17
+msgid "NarrowSearch"
+msgstr "Reduce la busqueda"
+
+#: rummiApp/players.py:34 rummiApp/players.py:133 rummiApp/players.py:135
+#: rummiApp/players.py:147 rummiApp/players.py:243
+msgid "AuthenticationFailed"
+msgstr "Ingreso incorrecto"
+
+#: rummiApp/players.py:36 rummiApp/players.py:121 rummiApp/players.py:149
+#: rummiApp/players.py:245
+msgid "UserDeactivated"
+msgstr "Usuario desactivado"
+
+#: rummiApp/players.py:49 rummiApp/players.py:229 rummiApp/players.py:260
+msgid "NotValidPass"
+msgstr "Contraseña no valida, por lo menos un número y una letra mayuscula"
+
+#: rummiApp/players.py:52 rummiApp/players.py:225 rummiApp/players.py:258
+msgid "DiffPass"
+msgstr "Las contraseñas no concuerdan"
+
+#: rummiApp/players.py:64 rummiApp/views.py:139
+msgid "PINSent"
+msgstr "Codigo Enviado"
+
+#: rummiApp/players.py:69
+msgid "WrongPIN"
+msgstr "Codigo Incorrecto"
+
+#: rummiApp/players.py:78
+msgid "UsernameNotValid"
+msgstr "usuario no valido"
+
+#: rummiApp/players.py:85
+msgid "AlreadyUsed"
+msgstr "correo Ya esta en uso"
+
+#: rummiApp/players.py:91
+msgid "NotRegistered"
+msgstr "No estas registrado"
+
+#: rummiApp/players.py:97 rummiApp/players.py:103
+msgid "RegisteredDifferentEMAIL"
+msgstr "correo Ya esta en uso"
+
+#: rummiApp/players.py:137 rummiApp/players.py:155 rummiApp/players.py:247
+#: rummiApp/views.py:100
+msgid "UserNotFound"
+msgstr "Usuario no encontrado"
+
+#: rummiApp/players.py:199
+msgid "PlayerSaved"
+msgstr "Modificado"
+
+#: rummiApp/players.py:201 rummiApp/players.py:307 rummiApp/services.py:62
+#: rummiApp/views.py:378
+msgid "DataError"
+msgstr "Datos incorrectos"
+
+#: rummiApp/players.py:221
+msgid "WrongPass"
+msgstr "Contraseña no Valida"
+
+#: rummiApp/players.py:234 rummiApp/players.py:263 rummiApp/views.py:384
+#: rummiApp/views.py:385 rummiApp/views.py:398
+msgid "PasswordChanged"
+msgstr "Contraseña Cambiada"
+
+#: rummiApp/players.py:249
+msgid "PasswordReset"
+msgstr "Resetear contraseña"
+
+#: rummiApp/players.py:249
+msgid "PasswordResetBody"
+msgstr "Ingresa el siguiente codigo en la aplicación para verificar tu identidad y modificar tu contraseña: %%CODE%%"
+
+#: rummiApp/players.py:250 rummiApp/views.py:391
+msgid "CodeSent"
+msgstr "Codigo enviado"
+
+#: rummiApp/players.py:265
+msgid "WrongCode"
+msgstr "Codigo no valido"
+
+#: rummiApp/players.py:304
+msgid "PlayerUpdated"
+msgstr "Modificado"
+
+#: rummiApp/services.py:11
+msgid "PinMessage"
+msgstr "Ingresa el siguiente condigo para confirmar tu correo: %%PIN%%"
+
+#: rummiApp/services.py:14
+msgid "PinSubject"
+msgstr "Codigo Registr Rummi"
+
+#: rummiApp/services.py:60
+msgid "FileExtError"
+msgstr "Extension no valida, Validos son : .jpg, .jpeg, .gif"
+
+#: rummiApp/services.py:64
+msgid "FileSizeError"
+msgstr "Tamaño de Archivo no valido, Max: 5 Mb"

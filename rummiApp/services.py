@@ -5,13 +5,11 @@ def sendPin(request, mail=False):
     import random
     from django.utils.translation import gettext as _
     pin = random.randint(10000, 99999)
-    logger('tmp', "PIN:" + str(pin))
-    from cryptography.fernet import Fernet
-    data = Fernet('RlHONeOuUGIzxLrCRzvCf3RMNxuNIyVATrBRpX5cEAU=').encrypt(str.encode(request.session.get('user_email', '') + "&" + request.session.get('user_pass', '')))
-    msg = _("PinMessage").replace('%(pin)', str(pin)).replace('%(url)', 'http://' + request.META['HTTP_HOST'] + '/?q=' + data.decode("utf-8"))
+    logger('errors', "PIN:" + str(pin))
+    msg = _("PinMessage").replace('%%PIN%%', str(pin))
     request.session['userpin'] = str(pin)
     email = request.POST.get('email', False)
-    sendMail([email], _('PinSubject'), msg + " " + str(pin))
+    sendMail([email], _('PinSubject'), msg)
 
 
 def sendMail(dest, subject, body, fromEmail=(settings.FROMEMAIL)):
@@ -43,40 +41,40 @@ def runnig(oper, daemon, delF=False):
 
 
 def fileUpload(request, pk, field):
-    if field == 'shield':
-        path = 'teamShields/'
-    elif field == 'avatar':
+    if field == 'avatar':
         path = 'playerAvatars/'
-    elif field == 'tournamentLogo':
-        path = 'tournament/'
+    elif field == 'audio':
+        path = 'audios/'
     else:
         return
+    request.session['msg'] = 'ELSE'
     if request.FILES and request.FILES[field]:
         import os
         from django.core.files.storage import FileSystemStorage
         file = request.FILES[field]
         filename, file_extension = os.path.splitext(file.name)
         from django.utils.translation import gettext as _
-        if not file.name.endswith('.png') and not file.name.endswith('.jpg') and not file.name.endswith('.jpeg') and not file.name.endswith('.gif'):
+        if field == 'avatar' and file_extension not in ".jpg,.png,.jpeg,.gif":
             request.session['msg'] = _('FileExtError')
+        elif field == 'audio' and file_extension not in ".3gp":
+            request.session['msg'] = _('DataError')
         elif file.size > 5024000:
             request.session['msg'] = _('FileSizeError')
         else:
             fs = FileSystemStorage()
-            deleteFile(request, pk, field)
+            deleteFile(pk, field)
             fs.save(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + file_extension), file)
+            request.session['msg'] = 'OK'
 
 
-def deleteFile(request, pk, field):
-    if field == 'shield':
-        path = 'teamShields/'
+def deleteFile(pk, field):
+    if field == 'audio':
+        path = 'audios/'
     elif field == 'avatar':
         path = 'playerAvatars/'
-    elif field == 'tournamentLogo':
-        path = 'tournament/'
     else:
         return
     import os
-    for ext in {'.png', '.jpg', '.jpeg', '.gif'}:
+    for ext in {'.png', '.jpg', '.jpeg', '.gif', '.3gp'}:
         if os.path.exists(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + ext)):
             os.remove(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + ext))

@@ -91,7 +91,7 @@ class PlayerAdminViews():
             elif request.POST.get('deleteBT', False):
                 from .services import deleteFile
                 from .players import editPlayer
-                deleteFile(request, userId, 'avatar')
+                deleteFile(userId, 'avatar')
                 editPlayer(request, True)
             try:
                 from .players import detailsPlayer
@@ -325,7 +325,27 @@ class APIViews():
     @login_required
     def gameInfoCode(request):
         from .games import viewGameCode
-        return APIViews.dataToJSON([viewGameCode(request.POST.get('code'))])
+        from .models import Player
+        from django.shortcuts import get_object_or_404
+        players = viewGameCode(request.POST.get('code'))
+        names = ''
+        exts = ''
+        for player in players.playersPos.split(","):
+            if player != '':
+                p = get_object_or_404(Player, userId=player)
+                name = p.userId.email.split("@")[0]
+                if p.nickname is not None and p.nickname != "":
+                    name = p.nickname
+                elif p.name is not None and p.name != "":
+                    name = p.name
+                names += name + ','
+            else:
+                names += ','
+            if player != '' and p.extension is not None:
+                exts += p.extension + ','
+            else:
+                exts += ','
+        return APIViews.dataToJSON([players])[:-2] + ',"players_names":"' + names + '", "players_ext":"' + exts + '"}\n'
 
     @login_required
     def viewMyGames(request):
@@ -374,7 +394,7 @@ class APIViews():
         editPlayer(request)
         if request.POST.get('deleteBT'):
             from .services import deleteFile
-            deleteFile(request, request.user.id, 'avatar')
+            deleteFile(request.user.id, 'avatar')
         return request.session.get('msg', _('DataError'))
 
     @login_required

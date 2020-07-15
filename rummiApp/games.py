@@ -233,7 +233,7 @@ def dealCards(request):
         'AC', '2C', '3C', '4C', '5C', '6C', '7C', '8C', '9C', '0C', 'JC', 'QC', 'KC'
     ]
     # Deal stack
-    for i in range(0.20):
+    for i in range(0, 20):
         random.shuffle(cards)
     from django.shortcuts import get_object_or_404, get_list_or_404
     from .models import Game, GameSet

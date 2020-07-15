@@ -310,3 +310,42 @@ def editPlayer(request, admin=False):
 def getUserHash(username):
     UserData = get_object_or_404(User, username=username)
     return username + "|" + UserData.password
+
+
+def myTable(request):
+    from .models import GameSet, Player
+    from django.db.models import Sum
+    userId = request.user.id
+    myGames = GameSet.objects.filter(userId=userId, gameId__started=2, set=1)
+    data = {}
+    for game in myGames:
+        dataSets = GameSet.objects.filter(gameId=game.gameId).values('userId', 'gameId').annotate(points=Sum('points')).order_by('gameId').order_by('points')
+        winner = 0
+        for c, gameset in enumerate(dataSets):
+            # check if player initialized
+            if gameset['userId'] not in data:
+                plInfo = get_object_or_404(Player, userId=gameset['userId'])
+                name = plInfo.userId.email.split("@")[:1]
+                if plInfo.nickname is not None and plInfo.nickname != '':
+                    name = plInfo.nickname
+                elif plInfo.name is not None and plInfo.name != '':
+                    name = plInfo.name
+                    if plInfo.lastname is not None and plInfo.lastname != '':
+                        name += " "+plInfo.lastname
+                data[gameset['userId']] = [0, 0, 0, name]
+            # find Game Winner
+            if c == 0:
+                if gameset['userId'] == request.user.id:
+                    winner = request.user.id
+                else:
+                    winner = gameset['userId']
+            if winner == request.user.id:
+                # increase 1 win USER
+                data[gameset['userId']][0] += 1
+            elif winner == gameset['userId']:
+                # increase 1 win OTHER
+                data[gameset['userId']][1] += 1
+            else:
+                # increase 1 lost BOTH
+                data[gameset['userId']][2] += 1
+    return data

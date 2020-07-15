@@ -430,6 +430,11 @@ class APIViews():
         return APIViews.dataToJSON(getFlow(request))
 
     @login_required
+    def myTable(request):
+        from .players import myTable
+        return str(myTable(request))
+
+    @login_required
     def addMessage(request):
         from .messages import addMessage
         addMessage(request)

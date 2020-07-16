@@ -325,14 +325,17 @@ def myTable(request):
             # check if player initialized
             if gameset['userId'] not in data:
                 plInfo = get_object_or_404(Player, userId=gameset['userId'])
-                name = plInfo.userId.email.split("@")[:1]
+                name = plInfo.userId.email.split("@")[:1][0]
                 if plInfo.nickname is not None and plInfo.nickname != '':
                     name = plInfo.nickname
                 elif plInfo.name is not None and plInfo.name != '':
                     name = plInfo.name
                     if plInfo.lastname is not None and plInfo.lastname != '':
                         name += " "+plInfo.lastname
-                data[gameset['userId']] = [0, 0, 0, name]
+                ext = ''
+                if plInfo.extension is not None:
+                    ext = plInfo.extension
+                data[gameset['userId']] = {"won": 0, "lost": 0, "both": 0, "name": name, "userId": gameset['userId'], "extension": ext}
             # find Game Winner
             if c == 0:
                 if gameset['userId'] == request.user.id:
@@ -341,11 +344,16 @@ def myTable(request):
                     winner = gameset['userId']
             if winner == request.user.id:
                 # increase 1 win USER
-                data[gameset['userId']][0] += 1
+                data[gameset['userId']]["won"] += 1
             elif winner == gameset['userId']:
                 # increase 1 win OTHER
-                data[gameset['userId']][1] += 1
+                data[gameset['userId']]["lost"] += 1
             else:
                 # increase 1 lost BOTH
-                data[gameset['userId']][2] += 1
-    return data
+                data[gameset['userId']]["both"] += 1
+        dd = ''
+        for k, v in data.items():
+            if v["userId"] == request.user.id:
+                continue
+            dd += str(v) + "\n"
+    return dd

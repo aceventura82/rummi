@@ -311,7 +311,7 @@ msgstr "Updated"
 
 #: rummiApp/services.py:11
 msgid "PinMessage"
-msgstr "Type the PIN below to verify your email"
+msgstr "Type the PIN below to verify your email: %%PIN%%"
 
 #: rummiApp/services.py:14
 msgid "PinSubject"

@@ -272,7 +272,7 @@ def pickCard(request):
     gameId = request.POST.get('gameId')
     gameData = get_object_or_404(Game, pk=gameId)
     gameSetData = get_object_or_404(GameSet, gameId=gameId, userId=request.user.id, set=gameData.current_set)
-    if not canPlay(gameData, request.user.id):
+    if not canPlay(gameData, request.user.id) or gameData.current_stack == '':
         return _('NotYourTurn')
     if gameData.moveStatus != 1:
         return _('AlreadyPick')

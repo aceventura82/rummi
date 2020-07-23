@@ -246,20 +246,21 @@ def sendEmailPass(request):
     else:
         return _('UserNotFound')
     from .services import sendMail
-    sendMail([user[0].email], _('PasswordReset'), _('PasswordResetBody').replace('%%CODE%%', user[0].password[0:6]))
+    sendMail([user[0].email], _('PasswordReset'), _('PasswordResetBody').replace('%%CODE%%', user[0].password[-7:-1]))
     return _('CodeSent')
 
 
 def updPasswordCode(request):
     userN = request.POST.get('usernameUser', False)
     user = User.objects.filter(username=userN)
-    if user[0] and user[0].password[0:6] == request.POST.get("code"):
+    if user[0] and user[0].password[-7:-1] == request.POST.get("code"):
         if request.POST.get('new_password1', "") != request.POST.get('new_password2', ""):
             return _('DiffPass')
         if len(request.POST.get('new_password1', "")) < 6 or all(c.isalpha() == request.POST.get('new_password1', "").isalpha() for c in request.POST.get('new_password1', "")):
-            return _('NotValidPass') + str(str(request.POST.get('new_password1', "")).isalpha())
-        user[0].set_password(request.POST.get('new_password1', ""))
-        user[0].save()
+            return _('NotValidPass')
+        userData = get_object_or_404(User, username=userN)
+        userData.set_password(request.POST.get('new_password1', ""))
+        userData.save()
         return _('PasswordChanged')
     else:
         return _('WrongCode')

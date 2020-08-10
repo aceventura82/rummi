@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Join Rummi Game</title>
-  </head>
-  <body>
-    Use the Rummi application to open this link
-  </body>
+<html lang="zxx">
+
+{%include 'head.html'%}
+{% load i18n %}
+{% load static %}
+<body>
+  <!-- Page Preloder -->
+  <div id="preloder">
+    <div class="loader"></div>
+  </div>
+  {%include 'header.html'%}
+  <section class="latest-preview-section" style="height:100%">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-8 col-lg-7 col-md-6">
+          <div class="section-title">
+            <h5>Soon</h5>
+            <p>
+              For now, open this link in the Rummi App
+            </p>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  {%include 'footer.html'%}
+</body>
+
 </html>

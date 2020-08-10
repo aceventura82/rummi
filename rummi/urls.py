@@ -16,18 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-from rummiApp import views
-from django.contrib.auth.views import LogoutView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 urlpatterns = [
     path('', include('rummiApp.urls')),
     path('AdminRummi/usersAdmin/', admin.site.urls),
-    path('AdminRummi/account/',  include('django.contrib.auth.urls')),
-    path('login/', views.index, name="login"),
-    path('register/', views.index, name="register"),
-    path('logout/', LogoutView.as_view(template_name='player/account/logout.html'), name="logout"),
-    path('account/reset-pass/', PasswordResetView.as_view(template_name='player/account/resetPass.html'), name="password_reset"),
-    path('account/reset-pass/done/', PasswordResetDoneView.as_view(template_name='player/account/resetPassDone.html'), name="password_reset_done"),
-    path('account/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='player/account/resetPassConfirm.html'), name="password_reset_confirm"),
-    path('account/reset/done/', PasswordResetCompleteView.as_view(template_name='player/account/resetPassComplete.html'), name="password_reset_complete"),
 ]

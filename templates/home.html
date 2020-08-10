@@ -1,0 +1,26 @@
+{% load i18n %}
+{% load static %}
+<section class="hero-section" style="background-image: url('{%static ''%}img/table.png');background-repeat: no-repeat;background-size:cover;">
+  <div class="container">
+    <div class="row">
+      <div class="header-links col-lg-6 col-md-6">
+        <div class="hs-text">
+          <div class="label"><span>Online</span></div>
+          <h3>{%trans 'PlayHere'%}</h3>
+          {%if request.user.is_authenticated%}
+          <button type="button" onclick="window.location.href='{%url 'index'%}#MYGAMES'">{%trans 'MyGames'%}</button>
+          {%else%}
+          <button type="button" class="login-switch">{%trans 'Login'%}</button>
+          {%endif%}
+        </div>
+      </div>
+      <div class="header-links col-lg-6 col-md-6">
+        <div class="hs-text">
+          <div class="label"><span>Android</span></div>
+          <h3>{%trans 'DownloadDesc'%}</h3>
+          <button type="button" onclick="window.open('https://github.com/aceventura82/rummi_android/raw/master/app/release/app-release.apk', '_blank')">{%trans 'Download'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

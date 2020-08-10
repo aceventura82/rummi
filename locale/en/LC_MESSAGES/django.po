@@ -6,19 +6,15 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: PACKAGE VERSIONReport-Msgid-Bugs-To: POT-Creation-Date: "
+"2020-07-24 15:31-0500PO-Revision-Date: YEAR-MO-DA HO:MI+ZONELast-Translator: "
+"FULL NAME <EMAIL@ADDRESS>Language-Team: LANGUAGE <LL@li.org>Language: <br /"
+">MIME-Version: 1.0<br />Content-Type: text/plain; charset=UTF-8 Content-"
+"Transfer-Encoding: 8bit<br />Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-11 14:05-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"POT-Creation-Date: 2020-07-24 18:15-0500\n"
 
-#: rummiApp/games.py:64 rummiApp/games.py:287
+#: rummiApp/games.py:64 rummiApp/games.py:288
 msgid "GeneralError"
 msgstr "General Error"
 
@@ -26,7 +22,7 @@ msgstr "General Error"
 msgid "GameCreated"
 msgstr "Game Created"
 
-#: rummiApp/games.py:79 rummiApp/games.py:169
+#: rummiApp/games.py:79 rummiApp/games.py:170
 msgid "WrongData"
 msgstr "Wrong Data"
 
@@ -58,7 +54,7 @@ msgstr "Wron Place"
 msgid "GameHasStarted"
 msgstr "Game Has Started"
 
-#: rummiApp/games.py:125 rummiApp/games.py:207
+#: rummiApp/games.py:125 rummiApp/games.py:209
 msgid "GameHasEnded"
 msgstr "Game Has Ended"
 
@@ -78,145 +74,147 @@ msgstr "Table Is Full"
 msgid "Joined"
 msgstr "Joined"
 
-#: rummiApp/games.py:167
+#: rummiApp/games.py:168
 msgid "Edited"
 msgstr "Edited"
 
-#: rummiApp/games.py:180
-msgid "NotFound"
-msgstr "Not Found"
+#: rummiApp/games.py:182
+#, fuzzy
+#| msgid "NotFound"
+msgid "NotFoundNotEnded"
+msgstr "Not Found or Game Not Ended yet"
 
-#: rummiApp/games.py:183 rummiApp/games.py:196
+#: rummiApp/games.py:185 rummiApp/games.py:198
 msgid "Deleted"
 msgstr "Deleted"
 
-#: rummiApp/games.py:193
+#: rummiApp/games.py:195
 msgid "CannotDeleteHasUser"
 msgstr "Cannot Delete, Game Has Users registered"
 
-#: rummiApp/games.py:205
+#: rummiApp/games.py:207
 msgid "GameAlreadyStarted"
 msgstr "Game Already Started"
 
-#: rummiApp/games.py:217
+#: rummiApp/games.py:219
 msgid "GameStarted"
 msgstr "Game Started"
 
-#: rummiApp/games.py:218
+#: rummiApp/games.py:220
 msgid "CannotStartOneUser"
 msgstr "Cannot Start The Game with One User"
 
-#: rummiApp/games.py:245
+#: rummiApp/games.py:246
 msgid "YouAreNotDealingThisGame"
 msgstr "You Are Not Dealing"
 
-#: rummiApp/games.py:247
+#: rummiApp/games.py:248
 msgid "AlreadyDealt"
 msgstr "Already Dealt"
 
-#: rummiApp/games.py:267
+#: rummiApp/games.py:268
 msgid "Dealt"
 msgstr "Dealt"
 
-#: rummiApp/games.py:277 rummiApp/games.py:296 rummiApp/games.py:373
-#: rummiApp/games.py:422
+#: rummiApp/games.py:278 rummiApp/games.py:297 rummiApp/games.py:374
+#: rummiApp/games.py:423
 msgid "NotYourTurn"
 msgstr "Not Your Turn"
 
-#: rummiApp/games.py:279
+#: rummiApp/games.py:280
 msgid "AlreadyPick"
 msgstr "Already Picked a Card"
 
-#: rummiApp/games.py:284
+#: rummiApp/games.py:285
 msgid "CannotPickFromDiscardAlreadyDrawn"
 msgstr "Cannot Pick Card From Discard, Already Drawn A Game"
 
-#: rummiApp/games.py:298
+#: rummiApp/games.py:299
 msgid "PickCardToDiscard"
 msgstr "Pick Card To Discard"
 
-#: rummiApp/games.py:301
+#: rummiApp/games.py:302
 msgid "CannotDiscardJoker"
 msgstr "Cannot Discard  The Joker"
 
-#: rummiApp/games.py:307 rummiApp/games.py:380
+#: rummiApp/games.py:308 rummiApp/games.py:381
 msgid "PickCardFirst"
 msgstr "Pick A Card First"
 
-#: rummiApp/games.py:309
+#: rummiApp/games.py:310
 msgid "CardNotInYourGame"
 msgstr "Card Not In Your Game"
 
-#: rummiApp/games.py:312
+#: rummiApp/games.py:313
 msgid "CannotDiscardPickedFromDiscard"
 msgstr "You Cannot Discard  the Card just Picked From Discard"
 
-#: rummiApp/games.py:337 rummiApp/games.py:408 rummiApp/games.py:466
-#: rummiApp/games.py:493
+#: rummiApp/games.py:338 rummiApp/games.py:409 rummiApp/games.py:467
+#: rummiApp/games.py:494
 msgid "GameEnded"
 msgstr "Game Ended"
 
-#: rummiApp/games.py:340
+#: rummiApp/games.py:341
 msgid "Descarted"
 msgstr "Discarted"
 
-#: rummiApp/games.py:357
+#: rummiApp/games.py:358
 msgid "WrongCards"
 msgstr "Wrong Cards"
 
-#: rummiApp/games.py:378 rummiApp/games.py:382
+#: rummiApp/games.py:379 rummiApp/games.py:383
 msgid "AlreadyDrawn"
 msgstr "Already Drawn"
 
-#: rummiApp/games.py:388
+#: rummiApp/games.py:389
 msgid "MissingCards"
 msgstr "Missing Cards"
 
-#: rummiApp/games.py:393
+#: rummiApp/games.py:394
 msgid "GameIsFullDraw"
 msgstr "Game Is Full Draw"
 
-#: rummiApp/games.py:396
+#: rummiApp/games.py:397
 msgid "GameNotValid"
 msgstr "Game Not Valid"
 
-#: rummiApp/games.py:409
+#: rummiApp/games.py:410
 msgid "Drawn"
 msgstr "Drawn"
 
-#: rummiApp/games.py:427
+#: rummiApp/games.py:428
 msgid "YoCannoDrawOverYet"
 msgstr "You Cannot Draw Over until you draw a game"
 
-#: rummiApp/games.py:429
+#: rummiApp/games.py:430
 msgid "NoGameToDrawIn"
 msgstr "No Game To Draw In"
 
-#: rummiApp/games.py:431
+#: rummiApp/games.py:432
 msgid "NoDrawOverOnDraw"
 msgstr "You Cannot Draw Over in the same turn of the draw"
 
-#: rummiApp/games.py:433
+#: rummiApp/games.py:434
 msgid "JustCanOneDrawOver"
 msgstr "Just Can Draw Over one time per turn"
 
-#: rummiApp/games.py:439
+#: rummiApp/games.py:440
 msgid "NotValidCard"
 msgstr "Not Valid Card"
 
-#: rummiApp/games.py:446 rummiApp/games.py:479
+#: rummiApp/games.py:447 rummiApp/games.py:480
 msgid "NotValidDrawOver"
 msgstr "Not Valid Card"
 
-#: rummiApp/games.py:467 rummiApp/games.py:494
+#: rummiApp/games.py:468 rummiApp/games.py:495
 msgid "DrawOverMade"
 msgstr "Draw Over Made"
 
-#: rummiApp/games.py:477
+#: rummiApp/games.py:478
 msgid "NotValidPosJoker"
 msgstr "Not Valid Position for Joker"
 
-#: rummiApp/games.py:576
+#: rummiApp/games.py:577
 msgid "NoCardsInDiscard"
 msgstr "No Cards In Discard To Pick"
 
@@ -224,25 +222,32 @@ msgstr "No Cards In Discard To Pick"
 msgid "NarrowSearch"
 msgstr "Narrow Search"
 
-#: rummiApp/players.py:34 rummiApp/players.py:133 rummiApp/players.py:135
-#: rummiApp/players.py:147 rummiApp/players.py:243
+#: rummiApp/players.py:34 rummiApp/players.py:124 rummiApp/players.py:126
+#: rummiApp/players.py:137 rummiApp/players.py:233
 msgid "AuthenticationFailed"
 msgstr "Authentication Failed"
 
-#: rummiApp/players.py:36 rummiApp/players.py:121 rummiApp/players.py:149
-#: rummiApp/players.py:245
+#: rummiApp/players.py:36 rummiApp/players.py:114 rummiApp/players.py:139
+#: rummiApp/players.py:235
 msgid "UserDeactivated"
 msgstr "User Deactivated"
 
-#: rummiApp/players.py:49 rummiApp/players.py:229 rummiApp/players.py:260
-msgid "NotValidPass"
-msgstr "Pasword Not Valid, min: 6 digit, at least one number and une Uppercase letter"
+#: rummiApp/players.py:39
+#, fuzzy
+#| msgid "NotRegistered"
+msgid "RegisteredLogin"
+msgstr "You are Not Registered"
 
-#: rummiApp/players.py:52 rummiApp/players.py:225 rummiApp/players.py:258
+#: rummiApp/players.py:49 rummiApp/players.py:219 rummiApp/players.py:250
+msgid "NotValidPass"
+msgstr ""
+"Pasword Not Valid, min: 6 digit, at least one number and une Uppercase letter"
+
+#: rummiApp/players.py:52 rummiApp/players.py:215 rummiApp/players.py:248
 msgid "DiffPass"
 msgstr "Passwords does not match"
 
-#: rummiApp/players.py:64 rummiApp/views.py:139
+#: rummiApp/players.py:64 rummiApp/views.py:231
 msgid "PINSent"
 msgstr "PIN Sent"
 
@@ -254,73 +259,321 @@ msgstr "Wrong PIN"
 msgid "UsernameNotValid"
 msgstr "Username Not Valid"
 
-#: rummiApp/players.py:85
+#: rummiApp/players.py:84
 msgid "AlreadyUsed"
 msgstr "username Already Used"
 
-#: rummiApp/players.py:91
-msgid "NotRegistered"
-msgstr "You are Not Registered"
-
-#: rummiApp/players.py:97 rummiApp/players.py:103
+#: rummiApp/players.py:91 rummiApp/players.py:97
 msgid "RegisteredDifferentEMAIL"
 msgstr "username Already Used"
 
-#: rummiApp/players.py:137 rummiApp/players.py:155 rummiApp/players.py:247
-#: rummiApp/views.py:100
+#: rummiApp/players.py:128 rummiApp/players.py:145 rummiApp/players.py:237
+#: rummiApp/views.py:192
 msgid "UserNotFound"
 msgstr "Username Not Found"
 
-#: rummiApp/players.py:199
+#: rummiApp/players.py:189
 msgid "PlayerSaved"
 msgstr "Saved"
 
-#: rummiApp/players.py:201 rummiApp/players.py:307 rummiApp/services.py:62
-#: rummiApp/views.py:378
+#: rummiApp/players.py:191 rummiApp/players.py:298 rummiApp/services.py:60
+#: rummiApp/views.py:490
 msgid "DataError"
 msgstr "Data Error"
 
-#: rummiApp/players.py:221
+#: rummiApp/players.py:211
 msgid "WrongPass"
 msgstr "Wrong Password"
 
-#: rummiApp/players.py:234 rummiApp/players.py:263 rummiApp/views.py:384
-#: rummiApp/views.py:385 rummiApp/views.py:398
+#: rummiApp/players.py:224 rummiApp/players.py:254 rummiApp/views.py:496
+#: rummiApp/views.py:497 rummiApp/views.py:510
+#: templates/resetPassComplete.html:20
 msgid "PasswordChanged"
 msgstr "Password Changed"
 
-#: rummiApp/players.py:249
+#: rummiApp/players.py:239
 msgid "PasswordReset"
 msgstr "Reset Password"
 
-#: rummiApp/players.py:249
+#: rummiApp/players.py:239
 msgid "PasswordResetBody"
-msgstr "Type the code below to verify your identity and change the password: %%CODE%%"
+msgstr ""
+"Type the code below to verify your identity and change the password: %%CODE%%"
 
-#: rummiApp/players.py:250 rummiApp/views.py:391
+#: rummiApp/players.py:240 rummiApp/views.py:503
 msgid "CodeSent"
 msgstr "Code Sent"
 
-#: rummiApp/players.py:265
+#: rummiApp/players.py:256
 msgid "WrongCode"
 msgstr "Wrong Code"
 
-#: rummiApp/players.py:304
+#: rummiApp/players.py:295
 msgid "PlayerUpdated"
 msgstr "Updated"
 
-#: rummiApp/services.py:11
+#: rummiApp/services.py:9
 msgid "PinMessage"
 msgstr "Type the PIN below to verify your email: %%PIN%%"
 
-#: rummiApp/services.py:14
+#: rummiApp/services.py:12
 msgid "PinSubject"
 msgstr "Code to subscrite in Rummi"
 
-#: rummiApp/services.py:60
+#: rummiApp/services.py:58
 msgid "FileExtError"
 msgstr "Wrong File extension, valid are: .jpg, .jpeg, .gif"
 
-#: rummiApp/services.py:64
+#: rummiApp/services.py:62
 msgid "FileSizeError"
 msgstr "File Size Error, Max: 5Mb"
+
+#: rummiApp/views.py:40
+msgid "JoinGame"
+msgstr "Join Game"
+
+#: rummiApp/views.py:65 templates/header.html:11 templates/header.html:46
+msgid "Home"
+msgstr "Home"
+
+#: rummiApp/views.py:105
+msgid "NotFound"
+msgstr "Not Found"
+
+#: templates/createGame.html:9 templates/myGames.html:39
+msgid "CreateGame"
+msgstr "Create Game"
+
+#: templates/createGame.html:16 templates/gameInfo.html:29
+#: templates/settings.html:16
+msgid "Name"
+msgstr "Name"
+
+#: templates/createGame.html:18 templates/gameInfo.html:31
+msgid "fullDrawGames"
+msgstr "full Draw Games"
+
+#: templates/createGame.html:51 templates/header.html:17
+#: templates/header.html:52
+msgid "Create"
+msgstr "Create"
+
+#: templates/footer.html:9 templates/footer.html:17 templates/header.html:41
+#: templates/home.html:13 templates/resetPassComplete.html:23
+msgid "Login"
+msgstr "Login"
+
+#: templates/footer.html:14 templates/footer.html:44
+#: templates/resetPass.html:28
+msgid "Email"
+msgstr "Email"
+
+#: templates/footer.html:15 templates/footer.html:45
+#: templates/resetPassConfirm.html:30
+msgid "Password"
+msgstr "Password"
+
+#: templates/footer.html:19 templates/resetPass.html:20
+#: templates/resetPassDone.html:19
+msgid "ResetPass"
+msgstr "Reset Password"
+
+#: templates/footer.html:20 templates/footer.html:32 templates/footer.html:40
+#, fuzzy
+#| msgid "NotRegistered"
+msgid "Register"
+msgstr "You are Not Registered"
+
+#: templates/footer.html:38 templates/searchGame.html:16
+msgid "Code"
+msgstr "Code"
+
+#: templates/footer.html:46 templates/resetPassConfirm.html:31
+msgid "RepeatPassword"
+msgstr "Repeat Password"
+
+#: templates/footer.html:48 templates/resetPass.html:31
+msgid "Send"
+msgstr "Send"
+
+#: templates/game.html:20
+#, fuzzy
+#| msgid "Games"
+msgid "Game"
+msgstr "Games"
+
+#: templates/gameInfo.html:22
+msgid "EditGame"
+msgstr "Edit"
+
+#: templates/gameInfo.html:65
+msgid "Go"
+msgstr "Go"
+
+#: templates/gameInfo.html:67
+msgid "Edit"
+msgstr "Edit"
+
+#: templates/gameInfo.html:69
+#, fuzzy
+#| msgid "Deleted"
+msgid "Delete"
+msgstr "Deleted"
+
+#: templates/gameRules.html:9 templates/header.html:23 templates/header.html:58
+msgid "GameRules"
+msgstr "Game Rules"
+
+#: templates/gameRules.html:13
+msgid "GameRulesDesc"
+msgstr ""
+"Rummi is a cards game, it is played with two decks of 52-card poker + 4 "
+"jokers, Rummi has several game modes, the mode used in this application is 6-"
+"handed game, 6 different hands or sets are played and the Player with the "
+"least total points is the winner of the game<br /><br />PLAYS:<br />During "
+"the game two types of Plays can be assembled: Triples And Straights<br /"
+">Triplets:<br />A Triplet, consists of 3 or more letters of the same number "
+"or letter regardless of the color, In this version of Rummi, there can be 2 "
+"numbers of the same color in a triplet<br />Straight:<br />A Straight "
+"consists of 4 or more cards in ascending order and of the same color.In this "
+"version of Rummi, when you reach the top of the straight, you can continue "
+"from the bottom, that is, if the straight ends in Ace, you can continue with "
+"the number 2<br /><br />PLAYS TO ASSEMBLE IN EACH GAME:<br />1. A Triplet "
+"and a Straight<br />2. Three Triplets<br />3. Two Triplets and One "
+"Straight<br />4. Two Straights<br />5. Two Straights and a Triplet<br />6. "
+"Three Straights<br /><br /><br />HAND OR SET OPTIONS<br />A hand or set can "
+"be played in two ways, simple or full draw<br />FULL DRAW:<br />A full draw "
+"hand or set means the player must put together the plays of the handwith all "
+"the cards he has plus the card that he has left over to discard<br />SINGLE:"
+"<br />In a single hand or set, the player can draw at any time when he makes "
+"the necessary plays of the hand,and continue eliminating cards discarding in "
+"games every turn<br /><br />OBJECTIVE:The objective of the game is to make "
+"the least amount of points in the 6 hands or sets,<br />for this, the player "
+"must try to run out of cards or with the least amount of points in each "
+"hand<br /><br />GAME PREPARATION:* Before starting the game, the player who "
+"deals the first game, decides which of the 6 hands or sets are full draw<br /"
+"><br />* The 108 cards are shuffled (including the 4 jokers)* Cards are "
+"dealt equally to each player<br />For the games from the first to the "
+"fourth, 13 cards are dealt, for the fifth and sixth, 15 cards are dealt* The "
+"rest of the cards are face down in the middle of the table<br /><br />GAME "
+"RULES<br />* Start the player who dealt the cards by taking a card from the "
+"deck<br /><br />* The player must get rid of a card that is placed in the "
+"discard to the right<br /><br />* The next player to the right has the "
+"option to take that card or take a card from the deck,In this version of "
+"Rummi, each player can only take cards from the discard on their left<br /"
+"><br />* The player discards a card and all the players continue the same "
+"way<br /><br />* When a player has made the necessary games to draw his "
+"game, when he is on his turn and after taking a card,either discard or deck, "
+"he can draw the cards<br /><br />* Once the game is drawn, discard a card."
+"<br /><br />* If a player has already drawn the game, he can being on his "
+"turn without taking a card,discard a card in a drawn game, can be his game "
+"or another player's game<br /><br />* If the player takes a card from the "
+"deck and can draw it into another player's game, he can draw it immediately "
+"and then discard a card<br /><br />* Once a player has drawn the game, can "
+"NOT take cards from the discard again, he can only take from the deck.<br /"
+"><br />* Before starting the game, the player who deals the first game, "
+"decides which of the 6 hands or sets are full draw<br /><br />* If a player "
+"takes a card from discard, he cannot discard that card in the same turn<br /"
+"><br /><br />JOKER:<br /><br />The joker replaces any card either on a "
+"triplet or on a straight<br />A game, be it triplet or straight, cannot be "
+"discarded only with jokers, it must have at least one card other than the "
+"joker<br /><br />CARD VALUE:<br /><br />* The numbers between 2 and 10, "
+"regardless of the color, have the value that the number represents<br />* "
+"Ace of clubs or spades has a value of 15 points<br />* Ace of Diamonds or "
+"Hearts has a one point value<br />* The letters J, Q, K have a value of 10 "
+"points, regardless of the color.<br />* The Joker has a value of 100 "
+"Points<br /><br /><br />"
+
+#: templates/header.html:14 templates/header.html:49
+msgid "Games"
+msgstr "Games"
+
+#: templates/header.html:16 templates/header.html:51 templates/home.html:11
+#: templates/myGames.html:9 templates/profile.html:20
+msgid "MyGames"
+msgstr "My Games"
+
+#: templates/header.html:18 templates/header.html:53
+#: templates/searchGame.html:22
+msgid "Search"
+msgstr "Search"
+
+#: templates/header.html:22 templates/header.html:56 templates/settings.html:9
+msgid "Settings"
+msgstr "Settings"
+
+#: templates/header.html:39 templates/logout.html:21
+msgid "Logout"
+msgstr "Logout"
+
+#: templates/home.html:9
+msgid "PlayHere"
+msgstr "Play On PC via Web"
+
+#: templates/home.html:20
+msgid "DownloadDesc"
+msgstr "Download the Phone Application"
+
+#: templates/home.html:21
+msgid "Download"
+msgstr "Download"
+
+#: templates/myGames.html:45 templates/profile.html:174
+msgid "Standings"
+msgstr "Standings"
+
+#: templates/myGames.html:64
+msgid "Won"
+msgstr "Won"
+
+#: templates/myGames.html:65
+msgid "Lost"
+msgstr "Lost"
+
+#: templates/myGames.html:66
+msgid "BothLost"
+msgstr "Both Lost"
+
+#: templates/resetPass.html:21
+msgid "ResetPassDesc"
+msgstr "Type your e-mail to send the password reset information"
+
+#: templates/resetPass.html:32 templates/resetPassConfirm.html:36
+msgid "Cancel"
+msgstr "Cancel"
+
+#: templates/resetPassConfirm.html:19
+msgid "NewPass"
+msgstr "New Password"
+
+#: templates/resetPassConfirm.html:20
+msgid "NewPassDesc"
+msgstr ""
+"type a new password, Min: 6 Characters, with numbers and letter (Uppercase "
+"and Lowercase)"
+
+#: templates/resetPassConfirm.html:27
+msgid "LinkExpired"
+msgstr "Link Expired"
+
+#: templates/resetPassConfirm.html:35
+msgid "ChangePass"
+msgstr "Change Password"
+
+#: templates/resetPassDone.html:20
+msgid "ResetPassSent"
+msgstr "Email Sent, check your Inbox to reset your password"
+
+#: templates/searchGame.html:9
+msgid "SearchGame"
+msgstr "Search Game"
+
+#: templates/settings.html:19
+msgid "Save"
+msgstr "Save"
+
+#~ msgid "Rules"
+#~ msgstr "Rules"
+
+#~ msgid "Username"
+#~ msgstr "Username"

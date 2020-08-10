@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+{%include 'head.html'%}
+{% load i18n %}
+{% load static %}
+
+<body style="display: flex;flex-flow: column;">
+  <!-- Page Preloder -->
+  <div id="preloder">
+    <div class="loader"></div>
+  </div>
+  {%include 'header.html'%}
+  <section class="contact-section spad" style="margin-top:30px;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="contact-text">
+            <div class="contact-title">
+              <h3>{%trans 'ResetPass'%}</h3>
+              <p>{%trans 'ResetPassDesc'%}</p>
+            </div>
+            <div class="contact-form">
+              <div class="dt-leave-comment">
+                <form method="post">
+                  {% csrf_token %}
+                  <div class="input-list col-lg-12 text-center">
+                    <input class="col-lg-4" type="email" name="email" autocomplete="email" placeholder="{%trans 'Email'%}" maxlength="254" required id="id_email">
+                  </div>
+                  <div class="col-lg-12 text-center">
+                    <button type="submit" class="col-lg-4">{% trans 'Send'%}</button>
+                    <button type="button" onclick="window.location.href='{%url 'index'%}'" class="col-lg-4 offset-lg-1">{% trans 'Cancel'%}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {%include 'footer.html'%}
+</body>
+
+</html>

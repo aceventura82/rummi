@@ -1,0 +1,64 @@
+{% load i18n %}
+{% load static %}
+<!-- Humberger Menu Begin -->
+<div class="humberger-menu-overlay"></div>
+<div class="humberger-menu-wrapper">
+  <div class="hw-logo">
+    <a href="#"><img src="{%static ''%}img/f-logo.png" alt=""></a>
+  </div>
+  <div class="hw-menu mobile-menu">
+    <ul>
+      <li class="active"><a href="{%url 'index'%}#HOME"><span>{%trans 'Home'%}</span></a></li>
+      {%if request.user.is_authenticated%}
+      <li>
+        <span>{%trans 'Games'%}<i class="fa fa-angle-down"></i></span>
+        <ul class="dropdown">
+          <li><a href="{%url 'index'%}#MYGAMES">{%trans 'MyGames'%}</a></li>
+          <li><a href="{%url 'index'%}#CREATE">{%trans 'Create'%}</a></li>
+          <li><a href="{%url 'index'%}#SEARCH">{%trans 'Search'%}</a></li>
+        </ul>
+      </li>
+      {%endif%}
+      <!-- <li><a href="{%url 'index'%}#SETTINGS"><span>{%trans 'Settings'%} </span></a></li> -->
+      <li><a href="{%url 'index'%}#RULES">{%trans 'GameRules'%}</a></li>
+    </ul>
+  </div>
+  <div id="mobile-menu-wrap"></div>
+</div>
+<!-- Humberger Menu End -->
+
+<!-- Header Section Begin -->
+<header class="header-section">
+  <div class="nav-options">
+    <div class="container">
+      <div class="humberger-menu humberger-open">
+        <i class="fa fa-bars"></i>
+      </div>
+      <div class="nav-search">
+        {%if request.user.is_authenticated%}
+        <a href="{%url 'logout'%}"><span>{%trans 'Logout'%} </span></a>
+        {%else%}
+        <a class="login-switch"><span>{%trans 'Login'%} </span></a>
+        {%endif%}
+      </div>
+      <div class="nav-menu">
+        <ul>
+          <li><a href="{%url 'index'%}#HOME"><span>{%trans 'Home'%}</span></a></li>
+          {%if request.user.is_authenticated%}
+          <li>
+            <a href="javascript:;"><span>{%trans 'Games'%}<i class="fa fa-angle-down"></i></span></a>
+            <ul class="dropdown">
+              <li><a href="{%url 'index'%}#MYGAMES">{%trans 'MyGames'%}</a></li>
+              <li><a href="{%url 'index'%}#CREATE">{%trans 'Create'%}</a></li>
+              <li><a href="{%url 'index'%}#SEARCH">{%trans 'Search'%}</a></li>
+            </ul>
+          </li>
+          <!-- <li><a href="{%url 'index'%}#SETTINGS"><span>{%trans 'Settings'%} </span></a></li> -->
+          {%endif%}
+          <li><a href="{%url 'index'%}#RULES">{%trans 'GameRules'%}</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- Header End -->

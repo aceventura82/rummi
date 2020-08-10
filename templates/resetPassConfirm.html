@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+{%include 'head.html'%}
+{% load i18n %}
+{% load static %}
+<body>
+  <!-- Page Preloder -->
+  <div id="preloder">
+    <div class="loader"></div>
+  </div>
+  {%include 'header.html'%}
+  <section class="contact-section spad" style="margin-top:30px;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="contact-text">
+            <div class="contact-title">
+              <h3>{%trans 'NewPass'%}</h3>
+              <p>{%trans 'NewPassDesc'%}</p>
+            </div>
+            <div class="contact-form">
+              <div class="dt-leave-comment text-center">
+                <form method="post">
+                  {% csrf_token %}
+                  {% if form.as_p is None %}
+                  <h3 class="text-white">{%trans 'LinkExpired'%}</h3>
+                  {% else %}
+                  <div class="input-list">
+                    <input type="password" name="new_password1" autocomplete="new-password" required id="id_new_password1" placeholder="{%trans 'Password'%}">
+                    <input type="password" name="new_password2" autocomplete="new-password" required id="id_new_password2" placeholder="{%trans 'RepeatPassword'%}">
+                  </div>
+                  {%endif%}
+                  <div class="col-lg-12 text-center">
+                    <button type="submit" class="col-lg-4">{% trans 'ChangePass'%}</button>
+                    <button type="button" onclick="window.location.href='{%url 'index'%}'" class="col-lg-4 offset-lg-1">{% trans 'Cancel'%}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {%include 'footer.html'%}
+</body>
+
+</html>

@@ -47,7 +47,7 @@ def fileUpload(request, pk, field):
         path = 'audios/'
     else:
         return
-    request.session['msg'] = 'ELSE'
+    request.session['msg'] = 'FAIL'
     if request.FILES and request.FILES[field]:
         import os
         from django.core.files.storage import FileSystemStorage
@@ -56,15 +56,17 @@ def fileUpload(request, pk, field):
         from django.utils.translation import gettext as _
         if field == 'avatar' and file_extension not in ".jpg,.png,.jpeg,.gif":
             request.session['msg'] = _('FileExtError')
-        elif field == 'audio' and file_extension not in ".3gp":
-            request.session['msg'] = _('DataError')
-        elif file.size > 5024000:
+        elif field == 'audio' and file_extension not in ".3gp,.wav":
+            request.session['msg'] = _('DataError')+file_extension
+        elif file.size > 10024000:
             request.session['msg'] = _('FileSizeError')
         else:
             fs = FileSystemStorage()
             deleteFile(pk, field)
             fs.save(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + file_extension), file)
             request.session['msg'] = 'OK'
+            if file_extension == ".3gp":
+                convert3gpToWav(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk)))
 
 
 def deleteFile(pk, field):
@@ -75,6 +77,12 @@ def deleteFile(pk, field):
     else:
         return
     import os
-    for ext in {'.png', '.jpg', '.jpeg', '.gif', '.3gp'}:
+    for ext in {'.png', '.jpg', '.jpeg', '.gif', '.3gp', '.wav'}:
         if os.path.exists(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + ext)):
             os.remove(os.path.join(settings.BASE_DIR, 'static/' + path + str(pk) + ext))
+
+
+def convert3gpToWav(file):
+    import os
+    os.system("/usr/bin/ffmpeg -i " + file + ".3gp " + file + ".wav")
+    os.system("/usr/bin/rm -f " + file + ".3gp")

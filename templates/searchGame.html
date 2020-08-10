@@ -1,0 +1,31 @@
+{% load i18n %}
+{% load static %}
+<section class="video-guide-section" id="SEARCH" style="flex-grow : 1; padding-top:100px;">
+  <div class="container" style="margin-bottom:250px">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="contact-text">
+          <div class="contact-title">
+            <h3>{%trans 'SearchGame'%}</h3>
+          </div>
+          <div class="contact-form">
+            <div class="dt-leave-comment text-center">
+              <form method="post">
+                {% csrf_token %}
+                <div class="input-list">
+                  <input type="text" class="input-value" name="code" placeholder="{%trans 'Code'%}*" required>
+                </div>
+                <div class="input-list row text-center">
+                  <h4 class="text-center col-lg-12">{{msg}}</h4>
+                </div>
+                <div class="input-list row text-center">
+                  <button type="submit" class="offset-lg-5 col-lg-2" name="searchBTN" value="1"><span>{%trans 'Search'%}</span></button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

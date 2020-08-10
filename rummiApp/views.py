@@ -8,10 +8,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import gettext as _
 
 
-def index(request):
-    return render(request, "index.html")
-
-
 def Err(request, context):
     if request.user.is_staff:
         return render(request, "404.html", context)
@@ -41,7 +37,9 @@ def testing(request):
 
 
 def joinGame(request, code):
-    return render(request, "open_in_app.html")
+    from .games import viewGameCode
+    gameData = viewGameCode(code)
+    return Player.gameInfo(request, gameData.id)
 
 
 def changelang(request, lang):
@@ -60,6 +58,126 @@ def changelang(request, lang):
     except Exception as ex:
         logger("errors", str(ex))
         return Err(request, {'msg': str(ex)})
+
+
+class Player():
+
+    def index(request):
+        context = {"title": _('Home')}
+        #  If User Logout, redirect to home
+        if request.path == "/logout/":
+            return redirect('/')
+        # If user login validate pass
+        if request.POST.get("loginBTN") == "1":
+            from .players import loginUserPass
+            msg = loginUserPass(request)
+            context = loginUserPass(request)
+            if 'auth' in context:
+                return redirect('/')
+        # if registering send PIN
+        elif request.POST.get("sendEmailBT") == "1":
+            from .players import registerUser
+            data = registerUser(request)
+            context['msg'] = data['msg']
+            context['valReg'] = data['value']
+        # if validating pin register
+        elif request.POST.get("valEmailBT") == "1":
+            from .players import registerUser
+            data = registerUser(request)
+            context['msg'] = data['msg']
+            context['valReg'] = data['value']
+        # if create Game
+        elif request.POST.get("createBTN") == "1":
+            from .games import addGame
+            msg = addGame(request)
+            if len(msg.split("|")) == 2:
+                msg.split("|")[0]
+                return redirect('gameInfo/'+msg.split("|")[0]+"/")
+            else:
+                context['msg'] = msg
+        # If Search game
+        elif request.POST.get("searchBTN") == "1":
+            from .games import viewGameCode
+            try:
+                gameData = viewGameCode(request.POST.get("code"))
+                return redirect("gameInfo/"+str(gameData.id)+"/")
+            except Http404:
+                context['msg'] = _('NotFound')
+        # if authenticated, get data
+        if request.user.is_authenticated:
+            context['data'] = Player.getData(request)
+        return render(request, "index.html", context)
+
+    def getData(request):
+        data = {'myTable': {}, "games": ''}
+        from .games import viewMyGames
+        from .players import myTable
+        import json
+        try:
+            data['games'] = viewMyGames(request.user.id)
+            tableInf = myTable(request)
+            for (k, info) in enumerate(tableInf.split("\n")):
+                if info != "":
+                    data['myTable'][k] = json.loads(info.replace("'", '"'))
+        except Http404:
+            pass
+        return data
+
+    @login_required
+    def gameInfo(request, gameId):
+        context = {}
+        from .games import viewGame, detailsGameInfo
+        if request.POST.get("editBTN") == "1":
+            from .games import editGame
+            msg = editGame(request, gameId)
+            if len(msg.split("|")) == 2:
+                msg = msg.split("|")[1]
+            context['msg'] = msg
+        elif request.POST.get("hideBTN") == "1":
+            from .games import hideGame, deleteGame
+            gameData = viewGame(gameId)
+            if request.user.id == gameData.userId.id:
+                msg = deleteGame(request, gameId)
+            else:
+                msg = hideGame(request, gameId)
+            if len(msg.split("|")) == 2:
+                return redirect('/#MYGAMES')
+            context['msg'] = msg
+        elif request.POST.get("joinBTN") == "1":
+            from .games import joinGame
+            joinGame(request)
+        gameData = viewGame(gameId)
+        try:
+            detailsGameInfo(gameId, request.user.id, 1)
+            context['joined'] = 1
+        except Http404:
+            context['joined'] = 0
+        context["title"] = gameData.name
+        context["data"] = gameData
+        context['players'] = ['', '', '', '', '']
+        from .players import detailsPlayer
+        for (k, p) in enumerate(context["data"].playersPos.split(",")):
+            if p != '':
+                context['players'][k] = detailsPlayer(p).userId.email.split("@")[0]
+                if detailsPlayer(p).nickname is not None and detailsPlayer(p).nickname != '':
+                    context['players'][k] = detailsPlayer(p).nickname
+                elif detailsPlayer(p).name is not None and detailsPlayer(p).name != '':
+                    context['players'][k] = detailsPlayer(p).name
+                    if detailsPlayer(p).lastname is not None and detailsPlayer(p).lastname != '':
+                        context['players'][k] += " "+detailsPlayer(p).lastname
+                if len(context['players'][k]) > 10:
+                    context['players'][k] = context['players'][k][:8]+"..."
+        return render(request, "gameInfo.html", context)
+
+    @login_required
+    def game(request, gameId):
+        context = {}
+        from .games import viewGame
+        gameData = viewGame(gameId)
+        context["title"] = gameData.name
+        context["data"] = gameData
+        context['playing'] = '1'
+        return render(request, "game.html", context)
 
 
 class PlayerAdminViews():
@@ -149,7 +267,6 @@ class APIViews():
         HttpResponse("OK")
 
     def valApiKey(key, user=""):
-        return True
         from .players import getUserHash
         from django.conf import settings
         import hmac
@@ -172,7 +289,7 @@ class APIViews():
 
     @csrf_exempt
     def getData(request):
-        logger("errors", str(request.POST))
+        # logger("errors", str(request.POST))
         try:
             from django.http import HttpResponse
             oper = request.POST.get('oper', '')
@@ -180,7 +297,7 @@ class APIViews():
             # Set Language
             APIViews.lang(request)
             # check API Key for Non public Opers
-            if oper not in publicAccess:
+            if oper not in publicAccess and not request.user.is_authenticated:
                 from .players import loginUserRequestsApp
                 # Validate application Key
                 if request.POST.get('usernameUser', '') == '':
@@ -194,6 +311,9 @@ class APIViews():
                     user.id
                 except Exception as ex:
                     return HttpResponse('--'+str(ex))
+            # check for web access
+            if request.POST.get("version") == "web" and not request.user.is_authenticated:
+                return HttpResponse("No Access")
             # get data
             return HttpResponse(getattr(APIViews, oper)(request))
         except Exception as ex:
@@ -366,7 +486,9 @@ class APIViews():
         from .games import detailsGameInfo
         from .models import Player
         from django.shortcuts import get_object_or_404
-        data = detailsGameInfo(request.POST.get('gameId'), request.user.id)
+        data = detailsGameInfo(request.POST.get('gameId'), request.user.id, int(request.POST.get('set', 0)))
+        if len(data) > 0 and (request.POST.get("version", "") == "web" or float(request.POST.get("version", "")) > 2.91):
+            return APIViews.orderData(request.user.id, data)
         result = ""
         for dato in data:
             result += APIViews.dataToJSON([dato.gameId])[:-2] + ","
@@ -382,6 +504,68 @@ class APIViews():
                 ext = playerData.extension
             result = result[:-2] + ',"name":"' + name + '", "extension":"'+ext+'"}\n'
         return result
+
+    def orderData(userId, data):
+        # get my position
+        myPos = 0
+        sortedData = [data[0].gameId]
+        playersAux = data[0].gameId.playersPos.split(",")
+        currenPlayer = playersAux[data[0].gameId.currentPlayerPos]
+        for (k, dato) in enumerate(playersAux):
+            if dato == str(userId):
+                myPos = k
+                break
+        if myPos > 0:
+            # order array user first
+            sortedData[0].playersPos = APIViews.reOrderArray(playersAux, myPos)
+            sortedData[0].current_discarded = APIViews.reOrderArray(data[0].gameId.current_discarded.split("|"), myPos, "|")
+            # get new current user pos
+            currentUserPos = 0
+            for (k, pId) in enumerate(sortedData[0].playersPos.split(",")):
+                if pId == str(currenPlayer):
+                    currentUserPos = k
+                    break
+            sortedData[0].currentPlayerPos = currentUserPos
+        # get Players Names and Ext
+        names = []
+        exts = []
+        for playerId in data[0].gameId.playersPos.split(","):
+            if playerId != '':
+                playerInfo = APIViews.getPlayerName(playerId)
+            else:
+                playerInfo = ['', '']
+            names.append(playerInfo[0])
+            exts.append(playerInfo[1])
+        result = APIViews.dataToJSON(sortedData)[:-2] + ","
+        result += '"names": "'+",".join(str(x) for x in names)+'",'
+        result += '"extensions": "'+",".join(str(x) for x in exts)+'"}\n'
+        for dato in data:
+            result += APIViews.dataToJSON([dato], "set_")
+        return result
+
+    def getPlayerName(userId):
+        from django.shortcuts import get_object_or_404
+        from .models import Player
+        playerData = get_object_or_404(Player, userId=userId)
+        name = playerData.userId.email.split("@")[0]
+        if playerData.nickname is not None and playerData.nickname != "":
+            name = playerData.nickname
+        elif playerData.name is not None and playerData.name != "":
+            name = playerData.name
+        ext = ''
+        if playerData.extension is not None:
+            ext = playerData.extension
+        if len(name) > 10:
+            name = name[:8]+"..."
+        return (name, ext)
+
+    def reOrderArray(data, pos, sep=","):
+        aux = []
+        for i in range(pos, 5):
+            aux.append(data[i])
+        for i in range(0, pos):
+            aux.append(data[i])
+        return sep.join(str(x) for x in aux)
 
     @login_required
     def userInfo(request):

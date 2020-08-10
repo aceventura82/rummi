@@ -1,0 +1,81 @@
+{% load static %}
+{% load i18n %}
+<!-- Login Section -->
+<div class="login-section">
+  <div class="login-close"><i class="fa fa-close"></i></div>
+  <div class="signup-text">
+    <div class="container">
+      <div class="signup-title">
+        <h2>{%trans 'Login'%}</h2>
+      </div>
+      <form method="post" class="signup-form">
+        {% csrf_token %}
+        <div class="sf-input-list">
+          <input type="email" class="input-value" name="usernameUser" placeholder="{%trans 'Email'%}*" required>
+          <input type="password" class="input-value" name="password" placeholder="{%trans 'Password'%}" required>
+          <h4 class="text-white">{{msg}}</h4>
+          <button type="submit" name="loginBTN" value="1"><span>{%trans 'Login'%}</span></button>
+        </div>
+        <a class="col-lg-6" href="{%url 'password_reset'%}">{%trans 'ResetPass'%}</a>
+        <a href="javascript:;" class="col-lg-6 signup-switch">{%trans 'Register'%}</a>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Login Section End -->
+<!-- REGISTER Section -->
+<div class="signup-section">
+  <div class="signup-close"><i class="fa fa-close"></i></div>
+  <div class="signup-text">
+    <div class="container">
+      <div class="signup-title">
+        <h2>{%trans 'Register'%}</h2>
+      </div>
+      <form method="post" class="signup-form">
+        {% csrf_token %}
+        {%if valReg == 'sent'%}
+        <div class="sf-input-list">
+          <input type="text" class="input-value" name="PINEmail" placeholder="{%trans 'Code'%}*" required>
+          <h4 class="text-white">{{msg}}</h4>
+          <button type="submit" name="valEmailBT" value="1"><span>{%trans 'Register'%}</span></button>
+        </div>
+        {%else%}
+        <div class="sf-input-list">
+          <input type="email" class="input-value" name="email" placeholder="{%trans 'Email'%}*" required>
+          <input type="password" class="input-value" name="passwordEmail" placeholder="{%trans 'Password'%}" required>
+          <input type="password" class="input-value" name="passwordEmail2" placeholder="{%trans 'RepeatPassword'%}" required>
+          <h4 class="text-white">{{msg}}</h4>
+          <button type="submit" name="sendEmailBT" value="1"><span>{%trans 'Send'%}</span></button>
+        </div>
+        {%endif%}
+      </form>
+    </div>
+  </div>
+</div>
+<!-- REGISTER Section End -->
+<!-- Footer Section Begin -->
+<footer class="footer-section">
+  <div class="copyright-area">
+    <p><a href="https://servoz.tk" target="_blank" style="color:gray;float:right">@Oz</a>
+  </div>
+</footer>
+<!-- Footer Section End -->
+<script src="{%static ''%}js/jquery-3.3.1.min.js"></script>
+<script src="{%static ''%}js/bootstrap.min.js"></script>
+<script src="{%static ''%}js/jquery.magnific-popup.min.js"></script>
+<script src="{%static ''%}js/circle-progress.min.js"></script>
+<script src="{%static ''%}js/jquery.barfiller.js"></script>
+<script src="{%static ''%}js/jquery.slicknav.js"></script>
+<script src="{%static ''%}js/owl.carousel.min.js"></script>
+<script src="{% static 'js/bootstrap-notify.min.js'%}"></script>
+<script src="{%static ''%}js/main.js"></script>
+{%if request.path == '/login/' or msg and request.POST.loginBTN %}
+<script>
+  $('.login-section').fadeIn(400);
+</script>
+{%endif%}
+{%if msg and request.POST.sendEmailBT %}
+<script>
+  $('.signup-section').fadeIn(400);
+</script>
+{%endif%}

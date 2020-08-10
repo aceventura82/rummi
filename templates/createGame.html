@@ -1,0 +1,90 @@
+{% load i18n %}
+{% load static %}
+<section class="instagram-post-section" id="CREATE" style="flex-grow : 1; padding-top:100px;">
+  <div class="container" style="margin-bottom:150px">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="contact-text">
+          <div class="contact-title">
+            <h3>{%trans 'CreateGame'%}</h3>
+          </div>
+          <div class="contact-form">
+            <div class="dt-leave-comment text-center">
+              <form method="post">
+                {% csrf_token %}
+                <div class="input-list">
+                  <input type="text" class="input-value" name="name" placeholder="{%trans 'Name'%}*" required>
+                </div>
+                <h4 class="text-center">{%trans 'fullDrawGames'%}</h4>
+                <div class="radio-check">
+                    <label class="text-white">1
+                        <input type="checkbox" id="fd1" onclick="changeFD();">
+                        <span class="checkbox"></span>
+                    </label>
+                    <label class="text-white">2
+                        <input type="checkbox" id="fd2" onclick="changeFD();">
+                        <span class="checkbox"></span>
+                    </label>
+                    <label class="text-white">3
+                        <input type="checkbox" id="fd3" onclick="changeFD();">
+                        <span class="checkbox"></span>
+                    </label>
+                    <label class="text-white">4
+                        <input type="checkbox" id="fd4" onclick="changeFD();">
+                        <span class="checkbox"></span>
+                    </label>
+                    <label class="text-white">5
+                        <input type="checkbox" id="fd5" onclick="changeFD();">
+                        <span class="checkbox"></span>
+                    </label>
+                    <label class="text-white">6
+                        <input type="checkbox" id="fd6" onclick="changeFD();">
+                        <span class="checkbox"></span>
+                    </label>
+                </div>
+                <div class="input-list row col-lg-12">
+                  <input type="hidden" name="fullDraw" id="fullDraw">
+                  <input type="hidden" name="private" value="1">
+                  <input type="hidden" name="speed" value="5">
+                  <input type="hidden" name="maxPlayers" value="5">
+                  <h4 class="text-center col-lg-12">{{msg}}</h4>
+                  <button type="submit" class="offset-lg-5 col-lg-2" name="createBTN" value="1"><span>{%trans 'Create'%}</span></button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  function changeFD(){
+    fd = '';
+    if(document.getElementById("fd1").checked)
+      fd += '1';
+    else
+      fd+='0';
+    if(document.getElementById("fd2").checked)
+      fd += '1';
+    else
+      fd+='0';
+    if(document.getElementById("fd3").checked)
+      fd += '1';
+    else
+      fd+='0';
+    if(document.getElementById("fd4").checked)
+      fd += '1';
+    else
+      fd+='0';
+    if(document.getElementById("fd5").checked)
+      fd += '1';
+    else
+      fd+='0';
+    if(document.getElementById("fd6").checked)
+      fd += '1';
+    else
+      fd+='0';
+    document.getElementById("fullDraw").value=fd;
+  }
+</script>

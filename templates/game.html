@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+{%include 'head.html'%}
+{% load i18n %}
+{% load static %}
+<link rel="stylesheet" href="{%static ''%}css/game.css" type="text/css">
+
+<body>
+  <!-- Page Preloder -->
+  <div id="preloder">
+    <div class="loader"></div>
+  </div>
+  {%include 'header.html'%}
+
+  <div class="box">
+    <!-- Menu and Deck -->
+    <div class="row header text-white text-center">
+      <div class="col-sm-5">
+        <button type="button" id="sortColorBTN" class="menu-btn" onclick="sortCards(true);"><img src="{%static ''%}img/gambling.png" height="40" /></button>
+        <button type="button" id="sortNumberBTN" class="menu-btn text-white" onclick="sortCards();">1 2 3</button>
+        <button type="button" id="inCardPositionBTN" class="menu-btn text-white" onclick="inSide();"><i class="fa fa-arrows-h" aria-hidden="true"></i></button>
+        <button type="button" id="stantingsBTN" class="menu-btn text-white" onclick="gameSummary();"><i class="fa fa-list-ol" aria-hidden="true"></i></button>
+        <p id="gameSetInfo"></p>
+      </div>
+      <div class="col-sm-2" id="deckDiv">
+        <button type="button" id="deckBTN" class="deck" onclick="callDeck();"></button><br />
+        <button type="button" id="mainBTN" class="menu-btn" onclick="mainButton();" style="display:none;"></button>
+        <button type="button" id="shareBTN" class="menu-btn" onclick="copy();" style="display:none;">Copy Share Link</button>
+      </div>
+      <div class="col-sm-5">
+        <button type="button" id="gameInfoBTN" class="menu-btn text-white" onclick="setInfo();"><i class="fa fa-info-circle" aria-hidden="true"></i></button>
+        <button type="button" id="chatBTN" class="menu-btn text-white" onclick="showMessages();"><i class="fa fa-commenting" aria-hidden="true"></i></button>
+        <button type="button" id="recBTN" class="menu-btn text-white" onclick="recPressed();"><i class="fa fa-microphone" aria-hidden="true"></i></button>
+        <p id="mainInfo" onclick="this.classList.remove('blink');"></p>
+      </div>
+
+      <div class="row summary-box overlay" id="game-summary-div" onclick="this.style.display='none';">
+        <div class="row col-sm-12" id="summaryTitle"></div>
+        <div class="row col-sm-12" id="summaryBody"></div>
+        <div class="row col-sm-12">
+          <p>
+            <font color="red">Winner</font>
+          </p>
+        </div>
+        <div class="row col-sm-12">
+          <p>
+            <font color="blue">Winner Full Draw</font>
+          </p>
+        </div>
+      </div>
+
+      <div class="row draw-box overlay" id="draw-div">
+        <div class="row col-sm-12" id="drawPreDiv1" style="height:30%"></div>
+        <div class="row col-sm-12" id="drawPreDiv2" style="height:30%"></div>
+        <div class="row col-sm-12" id="drawPreDiv3" style="height:30%"></div>
+        <button type="button" id="addDrawBTN" class="menu-btn" onclick="addDraw();">Add Game</button>
+      </div>
+
+      <img id="audios-img" class="audios-box" onclick="cancelRec();"/>
+
+      <div class="row preview-box overlay" id="preview-div" onclick="this.style.display='none';" style="padding:30px"></div>
+      <div class="row game-info-box overlay" id="set-info-div" onclick="this.style.display='none';" style="padding:30px;"></div>
+      <div class="row message-box overlay" id="messages-div" style="padding:30px">
+        <div id="messages-in-div" style="overflow-y:scroll; height:90%"></div>
+        <div>
+          <div class="input-list">
+            <input type="text" class="input-value col-sm-12" id="send-msg" placeholder="{%trans 'Message'%}" onchange="sendMsg();">
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- Table, draws and others discards -->
+    <div class="row content text-white text-center">
+      <div class="col-sm-5" style="height:35%;">
+        <div class="row">
+          <div class="col-sm-2 text-center" id="player4Div" style="margin-left:0; margin-right:right;">
+            <!-- Player 4 Avatar  -->
+            <img id="discard-card-4" class="card" style="display:none" height="60">
+            <button type="button" id="player4BTN" class="avatar"></button>
+            <p id="player4Name">Player 4</p>
+          </div>
+          <div class="col-sm-10" id="draw4Div">
+            <!--  Draw 4 -->
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-1" style="height:35%;">
+        <div class="row">
+          <div class="col-sm-12">
+            <!-- Discard 4  -->
+            <button type="button" id="discard4BTN" class="discard"></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6" style="height:35%;">
+        <div class="row">
+          <div class="col-sm-10" id="draw3Div">
+            <!--  Draw 3 -->
+          </div>
+          <div class="col-sm-2 text-center" id="player3Div" style="margin-left:auto; margin-right:0;">
+            <!-- Player 3 Avatar  -->
+            <img id="discard-card-3" class="card" style="display:none" height="60">
+            <button type="button" id="player3BTN" class="avatar"></button>
+            <p id="player3Name">Player 3</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6" style="height:35%;">
+        <div class="row">
+          <div class="col-sm-1">
+            <!-- Discard 5  -->
+            <button type="button" id="discard5BTN" class="discard"></button>
+          </div>
+          <div class="col-sm-10" id="draw5Div" style="margin-left:40px">
+            <!--  Draw 5 -->
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6" style="height:35%;">
+        <div class="row">
+          <div class="col-sm-10" id="draw2Div">
+            <!--  Draw 2 -->
+          </div>
+          <div class="col-sm-1">
+            <!-- Discard 3  -->
+            <button type="button" id="discard3BTN" class="discard"></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12" style="height:30%;float:right">
+        <div class="row" style="float:left">
+          <div class="col-sm-1 text-center" id="player5Div" style="margin-left:0; margin-right:auto;">
+            <!-- Player 5 Avatar  -->
+            <img id="discard-card-5" class="card" style="display:none" height="60">
+            <button type="button" id="player5BTN" class="avatar"></button>
+            <p id="player5Name">Player 5</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10" id="draw1Div"></div>
+          <div class="col-sm-1 text-center" id="player2Div" style="margin-left:auto; margin-right:0;">
+            <!-- Player 2 Avatar  -->
+            <img id="discard-card-2" class="card" style="display:none" height="60">
+            <button type="button" id="player2BTN" class="avatar"></button>
+            <p id="player2Name">Player 2</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Player discards and cards -->
+    <div class="row footer" style="float:left">
+      <div class="col-sm-1">
+        <!-- Discard 1  -->
+        <button type="button" id="discard1BTN" class="discard" onclick="callPick();"></button>
+      </div>
+      <div class="col-sm-1 text-center" style="margin-left:0; margin-right:auto;">
+        <!-- Player 1 Avatar  -->
+        <button type="button" id="player1BTN" class="avatar"></button>
+        <p id="player1Name">Player 1</p>
+      </div>
+      <div class="col-sm-9 text-center" id="cardsDiv">
+        <!--  Cards -->
+      </div>
+      <div class="col-sm-1">
+        <!-- Discard 2  -->
+        <button type="button" id="discard2BTN" class="discard" onclick="callDiscard();"></button>
+      </div>
+    </div>
+  </div>
+  {%include 'footer.html'%}
+  <script src="{%static ''%}js/game.js"></script>
+  <script src="{%static ''%}js/WebAudioRecorder.min.js"></script>
+  <script src="{%static ''%}js/recApp.js"></script>
+  <script src="{%static ''%}js/messages.js"></script>
+  <script>
+    setVars('{{request.user.id}}', '{{request.user.email}}', '{{data.id}}');
+    fetchData();
+    // Data auto reload
+    var bgInterval = setInterval(function() {
+      var ended = fetchData();
+      if(ended == 2)
+        clearInterval(bgInterval);
+    }, 3000);
+    setLongClicks();
+
+    function copy() {
+      const el = document.createElement('textarea');
+      el.value = "Hi!,\nJoin me here to play a Rummi game!\nuse this code in tha app: {{data.code}} or click here\nhttps://rummi.servoz.tk/joinGame/{{data.code}}/";
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showNotify('Share Link Copied to Clipboard');
+    }
+  </script>
+</body>
+
+</html>

@@ -36,7 +36,7 @@ def registerUser(request):
             context['msg'] = _('UserDeactivated')
         else:
             context['value'] = 'registered'
-            context['msg'] = 'registered'
+            context['msg'] = _('RegisteredLogin')
             context['auth'] = valAuth
             return context
     # Send PIN
@@ -80,16 +80,10 @@ def valUserEmail(request, context):
     try:
         # check if user exits
         Player.objects.get(userId__email=email)
-        if request.path == '/register/':
-            # if registering return error
-            context['msg'] = _('AlreadyUsed')
-            return context
-        return 1
+        # if registering return error
+        context['msg'] = _('AlreadyUsed')
+        return context
     except Exception:
-        # if not registering, user does not exits
-        if request.path != '/register/' and request.POST.get('oper') != 'register':
-            context['msg'] = _('NotRegistered')
-            return context
         # New User
         try:
             # check email not in use
@@ -128,12 +122,13 @@ def loginUserPass(request):
             if user.id:
                 if not user.is_staff:
                     request.session['username'] = userObj.nickname
-                    context['auth'] = 'OK'
+                context['auth'] = 'OK'
             else:
                 context['msg'] = _('AuthenticationFailed')
         else:
             context['msg'] = _('AuthenticationFailed')
     else:
+        context['msg'] = _('UserNotFound')
         context['msg'] = _('UserNotFound')
     return context
 

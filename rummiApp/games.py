@@ -1,11 +1,14 @@
 from django.utils.translation import gettext as _
 
 
-def detailsGameInfo(gameId, userId):
+def detailsGameInfo(gameId, userId, set=0):
     from .models import GameSet
     from django.shortcuts import get_list_or_404
-    get_list_or_404(GameSet, gameId=gameId, userId=userId)
-    return get_list_or_404(GameSet, gameId=gameId)
+    get_list_or_404(GameSet, gameId=gameId, userId=userId, set=1)
+    if set != 0:
+        return get_list_or_404(GameSet, gameId=gameId, set=set)
+    else:
+        return get_list_or_404(GameSet, gameId=gameId)
 
 
 def viewGame(gameId):
@@ -155,40 +158,44 @@ def joinGame(request):
     return "1|" + _('Joined')
 
 
-def editGame(request):
+def editGame(request, gameId=-1):
     from .models import Game, GameFormEdit
     from django.shortcuts import get_object_or_404
-    gameId = request.POST.get('gameId')
+    if gameId == -1:
+        gameId = request.POST.get('gameId')
     gameData = get_object_or_404(Game, pk=gameId, userId=request.user.id)
     formData = GameFormEdit(request.POST, instance=gameData)
     if formData.is_valid():
         formData.save()
-        updateDate(request.POST.get('gameId'))
+        updateDate(gameId)
         return "1|" + _('Edited')
     else:
         return _('WrongData')
 
 
-def hideGame(request):
+def hideGame(request, gameId=-1):
+    if gameId == -1:
+        gameId = request.POST.get('gameId')
     from .models import GameSet
     from django.shortcuts import get_object_or_404
     from django.http import Http404
-    gameId = request.POST.get('gameId')
     try:
         gameData = get_object_or_404(GameSet, gameId=gameId, set=1, userId=request.user.id, gameId__started="2")
     except Http404:
-        return _('NotFound')
+        return _('NotFoundNotEnded')
     gameData.hidden = '1'
     gameData.save()
     return "1|" + _('Deleted')
 
 
 # Delete game
-def deleteGame(request):
+def deleteGame(request, gameId=-1):
+    if gameId == -1:
+        gameId = request.POST.get('gameId')
     from .models import Game, GameSet
     from django.shortcuts import get_object_or_404
-    gameData = get_object_or_404(Game, pk=request.POST.get('gameId'), userId=request.user.id)
-    userCount = GameSet.objects.filter(set=1, gameId=request.POST.get('gameId')).count()
+    gameData = get_object_or_404(Game, pk=gameId, userId=request.user.id)
+    userCount = GameSet.objects.filter(set=1, gameId=gameId).count()
     if userCount > 1:
         return _('CannotDeleteHasUser')
     gameData.delete()
@@ -293,7 +300,7 @@ def discardCard(request):
     gameData = get_object_or_404(Game, pk=gameId)
     if not canPlay(gameData, request.user.id):
         return _('NotYourTurn')
-    if request.POST.get("out", '-1') == '-1':
+    if len(request.POST.get("out", '')) != 2:
         return _('PickCardToDiscard')
     card = request.POST.get("out")
     if card == 'XX':

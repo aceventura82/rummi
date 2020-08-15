@@ -540,6 +540,10 @@ function inSide() {
 }
 
 function gameSummary(winner = '', winAux) {
+  if(document.getElementById('game-summary-div').style.display == 'block'){
+    document.getElementById('game-summary-div').style.display = 'none';
+    return;
+  }
   if (document.getElementById('game-summary-div').style.display == 'block') return;
   var standings = '<div class="row col-sm-12"><h4 class="col-sm-2">#</h4>';
   var playersTotal = [0, 0, 0, 0, 0];
@@ -547,20 +551,20 @@ function gameSummary(winner = '', winAux) {
     if (PLAYERSNAMES[i] != '')
       standings += '<h4 class="col-sm-2">' + PLAYERSNAMES[i] + '</h4>';
   standings += '</div>';
-  var set = SET;
-  for (var i = 0; i < set; i++) {
+  for (var i = 0; i < 6; i++) {
     var color = 'red';
     if (FULLDRAW.substring(i, i + 1) == '1')
       color = 'blue';
-    standings += '<div class="row col-sm-12"><h4 class="col-sm-2">' + (i + 1) + '</h4>';
+    standings += '<div class="row col-sm-12"><h4 class="col-sm-2"><font color="' + color + '">' + (i + 1) + '</font></h4>';
     for (var j = 0; j < PLAYERSSTANDINGS[i].length; j++) {
       if (PLAYERSSTANDINGS[i][j] != -1) {
         var colorW = '';
-        if (PLAYERSSTANDINGS[i][j] == 0)
+        if (PLAYERSSTANDINGS[i][j] == 0 && (i+1) != SET || STARTED == 2)
           colorW = color;
         standings += '<h4 class="col-sm-2"><font color="' + colorW + '">' + PLAYERSSTANDINGS[i][j] + '</font></h4>';
         playersTotal[j] += parseInt(PLAYERSSTANDINGS[i][j]);
-      }
+      }else if(PLAYERS[j] != '')
+        standings += '<h4 class="col-sm-2">0</h4>';
     }
     standings += '</div>';
   }
@@ -581,7 +585,7 @@ function gameSummary(winner = '', winAux) {
   }
   var ww = 0;
   var min = 10000000;
-  if (set == 6) {
+  if (SET == 6) {
     for (var i = 0; i < PLAYERS.length; i++) {
       if (PLAYERS[i] == '') continue;
       if (playersTotal[i] < min) {
@@ -604,6 +608,10 @@ function gameSummary(winner = '', winAux) {
 }
 
 function setInfo() {
+  if(document.getElementById('set-info-div').style.display == 'block'){
+    document.getElementById('set-info-div').style.display = 'none';
+    return;
+  }
   var info = '<h2>This is Game %%GAME%%<h2><h4>You need to draw %%GAMES%%</h4><h4>This Game %%FULLDRAW%% fulldraw</h4>';
   if (SET == 1)
     info = info.replace('%%GAME%%', 'First').replace("%%GAMES%%", "One Straight and One Three of a kind");
@@ -1075,8 +1083,10 @@ function addDraw() {
 //Start game setup
 function startPlayers(gameData) {
   var playersExt = gameData.extensions.split(",");
+  NUMPLAYERS = 0;
   for (var i = 0; i <= 4; i++) { //set user info
     if (PLAYERS[i] != '') {
+      document.getElementById('player' + (i + 1) + 'Div').style.display = 'block';
       NUMPLAYERS++;
       document.getElementById('player' + (i + 1) + 'Name').innerHTML = PLAYERSNAMES[i];
       if (playersExt[i] != '') {

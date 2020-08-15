@@ -65,36 +65,33 @@
                         </div>
                       </div>
 
-                      {%if data.started == '0' and joined == 0%}
                       <br />
                       <br />
                       <br />
                       <h4 class="text-center">{%trans 'Position'%}</h4>
                       <div class="row offset-lg-4 col-lg-6 text-white">
                         <div class="offset-lg-2 col-lg-2">{{players.4|default:"Pos 5"}}
-                          <input type="radio" name="pos" value="4" {%if players.5 != ''%}disabled{%endif%}>
+                          <input type="radio" name="pos" value="4" {%if players.4 != '' or data.started != '0'%}disabled{%endif%}>
                         </div>
                         <div class="offset-lg-2 col-lg-2">{{players.3|default:"Pos 4"}}
-                          <input type="radio" name="pos" value="3" {%if players.4 != ''%}disabled{%endif%}>
+                          <input type="radio" name="pos" value="3" {%if players.3 != '' or data.started != '0'%}disabled{%endif%}>
                         </div>
                         <div class="col-lg-4"></div>
 
                         <div class="col-lg-2">{{players.0}}
-                          <input type="radio" name="pos" value="0" disabled>
+                          <input type="radio" name="pos" value="0" disabled required>
                         </div>
                         <div class="col-lg-6"><img src="{%static ''%}img/table.png" style="width:200px; height:80px; border-radius:20%;margin-left:auto; margin-left:0;" /></div>
                         <div class="col-lg-4"></div>
 
                         <div class="offset-lg-2 col-lg-2">{{players.1|default:"Pos 2"}}
-                          <input type="radio" name="pos" value="1" {%if players.2 != ''%}disabled{%endif%}>
+                          <input type="radio" name="pos" value="1" {%if players.1 != '' or data.started != '0'%}disabled{%endif%}>
                         </div>
                         <div class="offset-lg-2 col-lg-2">{{players.2|default:"Pos 3"}}
-                          <input type="radio" name="pos" value="2" {%if players.3 != ''%}disabled{%endif%}>
+                          <input type="radio" name="pos" value="2" {%if players.2 != '' or data.started != '0'%}disabled{%endif%}>
                         </div>
                         <div class="col-lg-4"></div>
-
                       </div>
-                      {%endif%}
                       <div class="input-list row text-center">
                         <input type="hidden" name="fullDraw" id="fullDraw">
                         <input type="hidden" name="private" value="1">

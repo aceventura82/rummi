@@ -136,7 +136,7 @@ function createDownloadLink(blob) {
   fd.append("msg", '::AUDIO::' + USERID + '::');
   fd.append("file", USERID + '_' + GAMEID);
   fd.append("audio", blob, USERID + '_' + GAMEID + '.wav');
-  xhr.open("POST", "https://rummi.servoz.tk/API/app/fetch/", true);
+  xhr.open("POST", "https://rummi.theozserver.com/API/app/fetch/", true);
   xhr.send(fd);
 
 }

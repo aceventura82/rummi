@@ -72,7 +72,7 @@ SECRET_KEY = '+#vef!#q_^*%a5c@1!e(dt^*8/500m#sw4ckcghci@bmmibnb&j'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['rummi.servoz.tk', 'localhost']
+ALLOWED_HOSTS = ['rummi.theozserver.com', 'localhost']
 
 # Application definition
 
@@ -202,14 +202,14 @@ TRANSLATIONS_PROJECT_BASE_DIR = BASE_DIR
 TRANSLATIONS_SYNC_REMOTE_URL = ''
 
 
-FROMEMAIL = 'no-reply@servoz.tk'
+FROMEMAIL = 'no-reply@theozserver.com'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'no-reply@servoz.tk'
+# EMAIL_HOST_USER = 'no-reply@theozserver.com'
 # EMAIL_HOST_PASSWORD = '$af4VAYU1ER-3%!'
 # EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = 'Rummi App <info@servoz.tk>'
+# DEFAULT_FROM_EMAIL = 'Rummi App <info@theozserver.com>'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

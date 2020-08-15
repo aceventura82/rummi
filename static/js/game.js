@@ -693,7 +693,7 @@ function fetchData() {
 }
 
 function callUrl(data, oper) {
-  var url = 'https://rummi.servoz.tk/API/app/fetch/';
+  var url = 'https://rummi.theozserver.com/API/app/fetch/';
   if (window.XMLHttpRequest) {
     // code for IE7+, Firefox, Chrome, Opera, Safari
     var xmlhttp = new XMLHttpRequest();

@@ -26,14 +26,7 @@ def checkMsg(request, context):
 
 @csrf_exempt
 def testing(request):
-    from django.http import HttpResponse
-    from .games import viewMyGames
-    data = viewMyGames(request.POST.get("userId"))
-    result = ""
-    for dato in data:
-        if "," + str(dato.gameId.id) + "," not in request.POST.get("ignore", ""):
-            result += APIViews.dataToJSON([dato.gameId])
-    return HttpResponse(result)
+    return render(request, "testWS.html")
 
 
 def joinGame(request, code):
@@ -154,20 +147,25 @@ class Player():
             context['joined'] = 0
         context["title"] = gameData.name
         context["data"] = gameData
-        context['players'] = ['', '', '', '', '']
-        from .players import detailsPlayer
-        for (k, p) in enumerate(context["data"].playersPos.split(",")):
-            if p != '':
-                context['players'][k] = detailsPlayer(p).userId.email.split("@")[0]
-                if detailsPlayer(p).nickname is not None and detailsPlayer(p).nickname != '':
-                    context['players'][k] = detailsPlayer(p).nickname
-                elif detailsPlayer(p).name is not None and detailsPlayer(p).name != '':
-                    context['players'][k] = detailsPlayer(p).name
-                    if detailsPlayer(p).lastname is not None and detailsPlayer(p).lastname != '':
-                        context['players'][k] += " "+detailsPlayer(p).lastname
-                if len(context['players'][k]) > 10:
-                    context['players'][k] = context['players'][k][:8]+"..."
+        context['players'] = Player.getPlayers(context["data"].playersPos)
         return render(request, "gameInfo.html", context)
+
+    def getPlayers(playersList):
+        players = ['', '', '', '', '']
+        from .players import detailsPlayer
+        for (k, p) in enumerate(playersList.split(",")):
+            if p != '':
+                playerInfo = detailsPlayer(p)
+                players[k] = playerInfo.userId.email.split("@")[0]
+                if playerInfo.nickname is not None and playerInfo.nickname != '':
+                    players[k] = playerInfo.nickname
+                elif playerInfo.name is not None and playerInfo.name != '':
+                    players[k] = playerInfo.name
+                    if playerInfo.lastname is not None and playerInfo.lastname != '':
+                        players[k] += " "+playerInfo.lastname
+                if len(players[k]) > 10:
+                    players[k] = players[k][:8]+"..."
+        return players
 
     @login_required
     def game(request, gameId):
@@ -289,7 +287,7 @@ class APIViews():
 
     @csrf_exempt
     def getData(request):
-        # logger("errors", str(request.POST))
+        logger("errors", str(request.POST))
         try:
             from django.http import HttpResponse
             oper = request.POST.get('oper', '')

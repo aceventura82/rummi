@@ -8,6 +8,8 @@ urlpatterns = [
     path('API/app/fetch/', views.APIViews.getData, name='getDataApp'),
     path('joinGame/<str:code>/', views.joinGame, name='joinGame'),
 
+    path('testing/<str:room>/', views.testing, name='Testing'),
+
     # Player Web
     path('', views.Player.index, name='index'),
     path('login/', views.Player.index, name='login'),

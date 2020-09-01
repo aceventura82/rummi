@@ -26,7 +26,6 @@ function recPressed() {
 }
 
 function startRecording() {
-	console.log("startRecording() called");
 
 	/*
 		Simple constraints object, for more advanced features see
@@ -98,15 +97,10 @@ function startRecording() {
 }
 
 function stopRecording() {
-	console.log("stopRecording() called");
-
 	//stop microphone access
 	gumStream.getAudioTracks()[0].stop();
-
 	//tell the recorder to finish the recording (stop recording + encode the recorded audio)
 	recorder.finishRecording();
-
-	console.log('Recording stopped');
 }
 
 function cancelRec() {
@@ -138,5 +132,10 @@ function createDownloadLink(blob) {
   fd.append("audio", blob, USERID + '_' + GAMEID + '.wav');
   xhr.open("POST", "https://rummi.theozserver.com/API/app/fetch/", true);
   xhr.send(fd);
-
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      sendData("audio");
+      console.log("Send");
+    }
+  };
 }

@@ -41,6 +41,7 @@
         </div>
         {%else%}
         <div class="sf-input-list">
+          <<input type="hidden" name="oper" value="register">
           <input type="email" class="input-value" name="email" placeholder="{%trans 'Email'%}*" required>
           <input type="password" class="input-value" name="passwordEmail" placeholder="{%trans 'Password'%}" required>
           <input type="password" class="input-value" name="passwordEmail2" placeholder="{%trans 'RepeatPassword'%}" required>

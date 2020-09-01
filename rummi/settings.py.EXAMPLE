@@ -55,6 +55,98 @@ WSGIScriptAlias / /var/www/django/rummi/rummi/wsgi.py
 ------------------------------------------------
 
 sudo python manage.py runserver 0:80
+
+
+Using WebSocket with Redis an supervisor
+sudo pip install channels
+sudo yum install redis  version: >5
+sudo mkdir /run/daphne/
+
+INSTALLED_APPS : 'channels',
+
+Supervisor file /etc/supervisord.d/asgi_sev.ini
+--------------------
+[fcgi-program:asgi]
+# TCP socket used by Nginx backend upstream
+socket=tcp://127.0.0.1:8000
+
+# Directory where your site's project files are located
+directory=/var/data/python/django/silvestreenvivo
+
+# Each process needs to have a separate socket file, so we use process_num
+# Make sure to update "mysite.asgi" to match your project name
+command=/var/data/python/django/projectenv/bin/daphne -u /run/daphne/daphne%(process_num)d.sock --fd 0 --access-log - --proxy-headers silvestreenvivo.asgi:application
+
+# Number of processes to startup, roughly the number of CPUs you have
+numprocs=4
+
+# Give each process a unique name so they can be told apart
+process_name=asgi%(process_num)d
+
+# Automatically start and recover processes
+autostart=true
+autorestart=true
+
+# Choose where you want your log to go
+stdout_logfile=/var/data/python/django/silvestreenvivo/silvestreenvivoApp/logs/asgi.log
+redirect_stderr=true
+------------
+files:
+project/asgi.py
+project/routing.py
+
+project/projectApp/consumers.py
+project/projectApp/routing.py
+
+Nginx:
+upstream channels-backend {
+    server 127.0.0.1:8000;
+}
+
+in server:
+    location /wss/ {
+
+        try_files $uri @proxy_to_app;
+
+    }
+
+    location @proxy_to_app {
+        proxy_pass http://channels-backend;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+    }
+
+Apache:
+    ProxyPreserveHost On
+        SSLProxyEngine on
+        SSLProxyVerify none
+        SSLProxyCheckPeerCN off
+        SSLProxyCheckPeerName off
+    # Part 1
+        ProxyPass /ws/ wss://localhost:8000/ws/
+        ProxyPassReverse /ws/ wss://localhost:8000/ws/
+
+
+add in settings
+
+ASGI_APPLICATION = 'silvestreenvivo.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    }
+}
+
 """
 
 import os

@@ -112,11 +112,13 @@ function moveCard(card, dest, oper) {
 //Move Cards Ends
 
 //Player Moves Pick, Discard Draw, DrawOver Lonclick
+var TMPCARD = -1;
 function discard(cardId, discardId) {
   var discardDiv = document.getElementById(discardId);
   if (cardId == 'INCARD' && IN_CARD != -1) {
     var childs = document.getElementById('cardsDiv').getElementsByTagName('button');
     var card = childs[IN_CARD];
+    TMPCARD = IN_CARD;
   } else {
     var card = document.getElementById(cardId);
     if (typeof card === "undefined" || card == null) {
@@ -141,11 +143,52 @@ function discardAfter(card, discardDiv) {
   if (rnd == 3)
     classRotate = 'rotateimg40';
   discardDiv.innerHTML += '<img src="/static/img/cards/d' + card.name + '.png" class="card-discard ' + classRotate + '">';
+  checkCardToDiscardTwice(card);
   try {
     document.getElementById(card.parentElement.id).removeChild(card);
   } catch (e) {}
-  CARDS = CARDS.replace(card.name + ",", "");
   handCards();
+}
+
+function checkCardToDiscardTwice(card){
+  var check = CARDS.split(",");
+  var p1=-1;
+  var p2=-1;
+  // check if two card of the same
+  for (var c=0;c<check.length;c++){
+    if(check[c] == card.name && p1 == -1){
+      p1 = c;
+    }else if(check[c] == card.name && p1 != -1){
+      p2 = c;
+      break;
+    }
+  }
+  if(p2 == -1) // just one card, discard
+    CARDS = CARDS.replace(card.name + ",", "");
+  else{ //card is twice, check pos
+    var auxP1=-1;
+    var auxP2=-1;
+    var childs = document.getElementById('cardsDiv').getElementsByTagName('button');
+    var cardPos = -1;
+    for (var i = 0; i < childs.length; i++) {
+      if (childs[i].name == card.name && auxP1 == -1) {
+        auxP1 = i;
+      }else if (childs[i].name == card.name && auxP1 != -1) {
+        auxP2 = i;
+      }
+    }
+    if(TMPCARD == auxP1) // discarding first card
+      CARDS = CARDS.replace(card.name + ",", "");
+    else{
+      var regex =  new RegExp(card.name+",",'g');
+      var t=0;
+      CARDS = CARDS.replace(regex, function (match) {
+        t++;
+        return (t === 2) ? "" : match;
+      });
+    }
+    TMPCARD = -1;
+  }
 }
 
 function pick(discardId, dest) {
@@ -585,7 +628,7 @@ function gameSummary(winner = '', winAux) {
   }
   var ww = 0;
   var min = 10000000;
-  if (SET == 6) {
+  if (SET == 6 && STARTED == 2) {
     for (var i = 0; i < PLAYERS.length; i++) {
       if (PLAYERS[i] == '') continue;
       if (playersTotal[i] < min) {
@@ -593,9 +636,9 @@ function gameSummary(winner = '', winAux) {
         min = playersTotal[i];
       }
     }
-    if (ww == 0 && STARTED == 2)
+    if (ww == 0)
       document.getElementById('summaryTitle').innerHTML = 'Congrats, YOU WON THE GAME!!!!!!!!!';
-    else if(STARTED == 2)
+    else
       document.getElementById('summaryTitle').innerHTML = 'Sorry, ' + PLAYERSNAMES[ww] + ' Won the Game!';
     if (winAux) {
       if (ww == 0)
@@ -746,7 +789,7 @@ function urlResponse(data, oper) {
   } else if (oper == 4 && res.length == 2) {
     TMP_CARD = res[1].toLowerCase();
     pick('discard1BTN', 'cardsDiv');
-    callFlow(PLAYERSNAMES[0] + '||--||' + 4 + '||--||' + IN_CARD_NAME.toUpperCase());
+    callFlow(PLAYERSNAMES[0] + '||--||' + 4 + '||--||' + res[1].toUpperCase());
     IN_CARD = -1;
     IN_CARD_NAME = '';
     // draw game
@@ -776,6 +819,8 @@ function urlResponse(data, oper) {
     callFlow(PLAYERSNAMES[0] + '||--||' + 1 + '||--||');
   else if (oper != 8)
     showNotify(data);
+  if(oper != 1)
+    sendData(oper);
 }
 
 //Game Info
@@ -1100,6 +1145,9 @@ function startPlayers(gameData) {
 }
 
 function startDiscards(gameData) {
+  document.getElementById('discard3BTN').style.display = 'block';
+  document.getElementById('discard4BTN').style.display = 'block';
+  document.getElementById('discard5BTN').style.display = 'block';
   var discards = gameData.current_discarded.split("|");
   var pos = 0;
   for (var i = 1; i < 4; i++) //set user info
@@ -1141,17 +1189,18 @@ function getDateF() {
   if (d.getDate() < 10)
     date += "0" + d.getDate();
   else
-    date += d.getHours();
+    date += d.getDate();
   date += " ";
   if (d.getHours() < 10)
     date += "0" + d.getHours();
   else
-    date += d.getMinutes();
+    date += d.getHours();
   date += ":";
   if (d.getMinutes() < 10)
     date += "0" + d.getMinutes();
   else
-    date += d.getSeconds();
+    date += d.getMinutes();
+  date += ":";
   if (d.getSeconds() < 10)
     date += "0" + d.getSeconds();
   else

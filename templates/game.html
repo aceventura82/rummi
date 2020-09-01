@@ -57,7 +57,7 @@
         <button type="button" id="addDrawBTN" class="menu-btn" onclick="addDraw();">Add Game</button>
       </div>
 
-      <img id="audios-img" class="audios-box" onclick="cancelRec();"/>
+      <img id="audios-img" class="audios-box" onclick="cancelRec();" />
 
       <div class="row preview-box overlay" id="preview-div" onclick="this.style.display='none';" style="padding:30px"></div>
       <div class="row game-info-box overlay" id="set-info-div" onclick="this.style.display='none';" style="padding:30px;"></div>
@@ -170,21 +170,15 @@
     </div>
   </div>
   {%include 'footer.html'%}
-  <script src="{%static ''%}js/game.js"></script>
+  <script src="{%static ''%}js/game0.js"></script>
   <script src="{%static ''%}js/WebAudioRecorder.min.js"></script>
   <script src="{%static ''%}js/recApp.js"></script>
   <script src="{%static ''%}js/messages.js"></script>
   <script>
     setVars('{{request.user.id}}', '{{request.user.email}}', '{{data.id}}');
     fetchData();
-    // Data auto reload
-    var bgInterval = setInterval(function() {
-      var ended = fetchData();
-      if(ended == 2)
-        clearInterval(bgInterval);
-    }, 3000);
     setLongClicks();
-
+    putMessages();
     function copy() {
       const el = document.createElement('textarea');
       el.value = "Hi!,\nJoin me here to play a Rummi game!\nuse this code in tha app: {{data.code}} or click here\nhttps://rummi.theozserver.com/joinGame/{{data.code}}/";
@@ -197,6 +191,30 @@
       document.body.removeChild(el);
       showNotify('Share Link Copied to Clipboard');
     }
+
+    const chatSocket = new WebSocket(
+      'wss://' + window.location.host + '/ws/{{data.id}}/'
+    );
+
+    //receive data
+    chatSocket.onmessage = function(e) {
+      data = JSON.parse(e.data).message.split("|");
+      if(data[0] != '8' || USERID != parseInt(data[1])){
+        fetchData();
+      }
+    };
+
+    //connection error
+    chatSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+    };
+
+    //send data
+    function sendData(oper) {
+      chatSocket.send(JSON.stringify({
+        'message': oper+'|'+USERID
+      }));
+    };
   </script>
 </body>
 
